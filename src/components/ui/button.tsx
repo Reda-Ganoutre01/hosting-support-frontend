@@ -1,5 +1,5 @@
 import React from "react";
-import cn from "classnames";
+import cn from "clsx";
 
 export default function Button({ children, variant = "primary", className, ...props }) {
   const base = "px-4 py-2 rounded-md font-medium focus:outline-none";
