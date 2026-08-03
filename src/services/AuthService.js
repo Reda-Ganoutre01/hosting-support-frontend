@@ -7,6 +7,7 @@ class AuthService{
   }
   async authenticate(credentials){
     return await  axios.http.post("/login",credentials);
+
   }
 
 }
