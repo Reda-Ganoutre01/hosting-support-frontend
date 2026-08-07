@@ -1,8 +1,3 @@
-/**
- * Lightweight, dependency-free validation.
- * (If the project scales, swap this for Yup/Zod — but the
- * function signatures below can stay identical.)
- */
 export function validateLogin({ email, password }) {
     const errors = {};
     if (!email) errors.email = 'Email is required';

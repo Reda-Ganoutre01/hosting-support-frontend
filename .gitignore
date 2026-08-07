@@ -1,5 +1,7 @@
 .env
 
+features
+components
 # Logs
 logs
 *.log
