@@ -6,7 +6,7 @@ import LoginPage from '@/features/auth/pages/LoginPage';
 import RegisterPage from '@/features/auth/pages/RegisterPage';
 import ProtectedRoute from '@/routes/ProtectedRoute';
 import RoleBasedRoute from '@/routes/RoleBasedRoute';
-import AdminLayout from '@/layouts/AdminLayout';                
+import AdminLayout from '@/layouts/AdminLayout';
 import ClientLayout from '@/layouts/ClientLayout';
 import { ROLES } from '@/utils/constants';
 
