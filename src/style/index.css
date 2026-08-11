@@ -1,32 +1,39 @@
-/* src/style/index.css or src/index.css */
+/* src/style/index.css */
 @import "@fontsource-variable/geist";
 
-/* Tailwind directives */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-/* CSS variables (only if not defined by a package you import) */
-:root{
+:root {
   --background: #f8fafc;
   --foreground: #0f172a;
-  --muted: #94a3b8;
-  --muted-foreground: #64748b;
-  --border: #e6edf3;
-  --input: #ffffff;
-  --ring: #bfdbfe;
 }
 
-/* Optional dark mode */
-.dark {
-  --background: #0b1220;
-  --foreground: #e6eef8;
-  --muted: #9aa7b9;
-  --muted-foreground: #cbd5e1;
-  --border: #112233;
-  --input: #0b1220;
-  --ring: #1e40af;
+/* Exact Vala Blueprint Background Pattern with full width blue gradient */
+.bg-blueprint {
+  background-color: #0b56d9;
+  background-image: 
+    linear-gradient(to right, rgba(255, 255, 255, 0.12) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(255, 255, 255, 0.12) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 
-/* If you import a shadcn CSS file that uses @apply, import it AFTER Tailwind directives */
-/* @import "shadcn/tailwind.css"; */
+/* Custom keyframes for floating integration badges */
+@keyframes floatSlow {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(3deg); }
+}
+
+@keyframes floatFast {
+  0%, 100% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-14px) rotate(-4deg); }
+}
+
+.animate-float-slow {
+  animation: floatSlow 5s ease-in-out infinite;
+}
+
+.animate-float-fast {
+  animation: floatFast 3.8s ease-in-out infinite;
+}
