@@ -17,14 +17,6 @@ module.exports = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
-        primary: {
-          DEFAULT: "#2563EB",
-          hover: "#1D4ED8",
-        },
-        success: "#16A34A",
-        heading: "#0F172A",
-        body: "#334155",
-        section: "#F8FAFC",
       },
     },
   },
@@ -32,14 +24,13 @@ module.exports = {
     plugin(function ({ addBase }) {
       addBase({
         ":root": {
-          "--background": "#FFFFFF",
-          "--foreground": "#0F172A",
-          "--muted": "#F8FAFC",
-          "--muted-foreground": "#334155",
-          "--border": "#E2E8F0",
-          "--primary": "#2563EB",
-          "--primary-hover": "#1D4ED8",
-          "--success": "#16A34A",
+          "--background": "#f8fafc",
+          "--foreground": "#0f172a",
+          "--muted": "#94a3b8",
+          "--muted-foreground": "#64748b",
+          "--border": "#e6edf3",
+          "--input": "#ffffff",
+          "--ring": "#bfdbfe",
         },
       });
     }),

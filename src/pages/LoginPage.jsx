@@ -1,24 +1,38 @@
-import { useContext, useState } from "react";
-import { User } from "lucide-react";
+import { useContext, useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { User, AlertCircle, Loader2 } from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { AuthContext } from "@/context/AuthContext.jsx";
 
 export default function LoginPage() {
-  const { login } = useContext(AuthContext);
+  const navigate = useNavigate();
+  const { login, loading, error, isAuthenticated, clearError } = useContext(AuthContext);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
 
-  const handleSubmit = (event) => {
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    login({ email, password, rememberMe });
+    if (clearError) clearError();
+
+    const result = await login({ email, username: email, password, rememberMe });
+
+    if (result?.type?.endsWith("/fulfilled")) {
+      navigate("/");
+    }
   };
 
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
         <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 bg-white text-slate-900">
-          <div className="max-w-xl mx-auto">
+          <div className="max-w-xl mx-auto w-full">
             <div className="flex items-center gap-3 mb-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/20">
                 <User className="h-6 w-6" />
@@ -33,6 +47,16 @@ export default function LoginPage() {
               Veuillez vous connecter pour accéder à votre espace client. Si vous n’avez pas encore de compte, créez-en un gratuitement.
             </p>
 
+            {error && (
+              <div className="mb-6 flex items-start gap-3 rounded-2xl border border-red-200 bg-red-50 p-4 text-red-700 text-sm font-medium">
+                <AlertCircle className="h-5 w-5 shrink-0 text-red-500 mt-0.5" />
+                <div>
+                  <p className="font-bold">Échec de connexion</p>
+                  <p className="text-red-600 mt-0.5">{error}</p>
+                </div>
+              </div>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="mb-2 block text-sm font-semibold text-slate-700">Adresse Email</label>
@@ -43,6 +67,7 @@ export default function LoginPage() {
                   placeholder="email@exemple.com"
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -55,6 +80,7 @@ export default function LoginPage() {
                   placeholder="••••••••"
                   className="w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-slate-900 outline-none transition focus:border-blue-500 focus:ring-2 focus:ring-blue-100"
                   required
+                  disabled={loading}
                 />
               </div>
 
@@ -65,6 +91,7 @@ export default function LoginPage() {
                     checked={rememberMe}
                     onChange={(e) => setRememberMe(e.target.checked)}
                     className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                    disabled={loading}
                   />
                   Se souvenir de moi
                 </label>
@@ -73,8 +100,15 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <Button type="submit" variant="orange" size="lg" className="w-full">
-                Se connecter
+              <Button type="submit" variant="orange" size="lg" className="w-full flex items-center justify-center gap-2" disabled={loading}>
+                {loading ? (
+                  <>
+                    <Loader2 className="h-5 w-5 animate-spin" />
+                    <span>Connexion en cours...</span>
+                  </>
+                ) : (
+                  <span>Se connecter</span>
+                )}
               </Button>
             </form>
           </div>

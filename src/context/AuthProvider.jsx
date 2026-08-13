@@ -2,37 +2,36 @@ import React, { useEffect, useMemo } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import authenticateUser from '../features/auth/actions/authUser';
 import registerUser from '../features/auth/actions/registerUser';
-import { logout } from '../features/auth/AuthReducer';
+import { logout, clearError } from '../features/auth/AuthReducer';
 import isTokenExpired from '../lib/isTokenExpired';
-import {AuthContext} from "@/context/AuthContext.jsx";
+import { AuthContext } from "@/context/AuthContext.jsx";
 
-export default function AuthProvider({children }) {
-
+export default function AuthProvider({ children }) {
   const dispatch = useDispatch();
-  const { user, isAuthenticated, token } = useSelector((state) => state.auth);
+  const { user, isAuthenticated, token, loading, error } = useSelector((state) => state.auth);
 
+  const login = (credentials) => {
+    return dispatch(authenticateUser(credentials));
+  };
 
+  const register = (credentials) => {
+    return dispatch(registerUser(credentials));
+  };
 
-  const login  = (credentials) =>{
-    dispatch(authenticateUser(credentials));
-  }
-
-
-  const register  =(credentials)=>{
-    dispatch(registerUser(credentials));
-  }
-
-  const handleLogout = () =>{
+  const handleLogout = () => {
     dispatch(logout());
-  }
+  };
 
-  useEffect(()=>{
-    if (token && isTokenExpired (token)){
+  const handleClearError = () => {
+    dispatch(clearError());
+  };
+
+  useEffect(() => {
+    if (token && isTokenExpired(token)) {
       handleLogout();
     }
-  },[token])
- 
- 
+  }, [token]);
+
   const value = useMemo(
     () => ({
       user,
@@ -40,8 +39,13 @@ export default function AuthProvider({children }) {
       isAuthenticated,
       register,
       logout: handleLogout,
+      loading,
+      error,
+      clearError: handleClearError,
     }),
-    [user, isAuthenticated, token]
+    [user, isAuthenticated, token, loading, error]
   );
-  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;}
+
+  return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
+}
 
