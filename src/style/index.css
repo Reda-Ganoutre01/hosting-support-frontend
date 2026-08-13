@@ -6,14 +6,8 @@
 @tailwind utilities;
 
 :root {
-  --background: #FFFFFF;
-  --foreground: #0F172A;
-  --muted: #F8FAFC;
-  --muted-foreground: #334155;
-  --border: #E2E8F0;
-  --primary: #2563EB;
-  --primary-hover: #1D4ED8;
-  --success: #16A34A;
+  --background: #f8fafc;
+  --foreground: #0f172a;
 }
 
 /* Exact Vala Blueprint Background Pattern with full width blue gradient */
