@@ -5,8 +5,6 @@ module.exports = {
   content: [
     "./index.html",
     "./src/**/*.{js,jsx,ts,tsx}",
-    // include any shadcn UI package paths if you import them from node_modules:
-    // "./node_modules/@shadcn/**/*.{js,ts,jsx,tsx,css}",
   ],
   darkMode: "class",
   theme: {
@@ -19,23 +17,29 @@ module.exports = {
         border: "var(--border)",
         input: "var(--input)",
         ring: "var(--ring)",
+        primary: {
+          DEFAULT: "#2563EB",
+          hover: "#1D4ED8",
+        },
+        success: "#16A34A",
+        heading: "#0F172A",
+        body: "#334155",
+        section: "#F8FAFC",
       },
     },
   },
   plugins: [
-    // If you installed tailwindcss-animate, uncomment the next line:
-    // require("tailwindcss-animate"),
-    // small default CSS variables so .bg-background etc. exist even without external token files
     plugin(function ({ addBase }) {
       addBase({
         ":root": {
-          "--background": "#f8fafc",
-          "--foreground": "#0f172a",
-          "--muted": "#94a3b8",
-          "--muted-foreground": "#64748b",
-          "--border": "#e6edf3",
-          "--input": "#ffffff",
-          "--ring": "#bfdbfe",
+          "--background": "#FFFFFF",
+          "--foreground": "#0F172A",
+          "--muted": "#F8FAFC",
+          "--muted-foreground": "#334155",
+          "--border": "#E2E8F0",
+          "--primary": "#2563EB",
+          "--primary-hover": "#1D4ED8",
+          "--success": "#16A34A",
         },
       });
     }),
