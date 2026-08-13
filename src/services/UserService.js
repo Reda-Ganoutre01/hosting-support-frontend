@@ -1,8 +1,11 @@
 import axios from "axios";
+import { env } from "../config/env";
+
+const API_BASE_URL = env.apiBaseUrl || "/api/v1";
 
 class UserService {
     constructor() {
-        this.http = axios.create({ baseURL: "/api/v1/users" });
+        this.http = axios.create({ baseURL: `${API_BASE_URL}/users` });
 
         this.http.interceptors.request.use(
             (config) => {
