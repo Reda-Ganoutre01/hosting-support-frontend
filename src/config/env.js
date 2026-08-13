@@ -1,7 +1,7 @@
 
 
 
-export const env= {
-  apiBaseUrl: import.meta.env.VITE_API_BASE_URL,
-  appName : import.meta.env.VITE_APP_NAME  || "Hosting Support Platform",
+export const env = {
+  apiBaseUrl: import.meta.env.VITE_API_BASE_URL || "/api/v1",
+  appName: import.meta.env.VITE_APP_NAME || "Hosting Support Platform",
 };
