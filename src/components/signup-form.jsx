@@ -1,6 +1,7 @@
 import { useContext, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertCircle, Loader2 } from "lucide-react";
+import { jwtDecode } from "jwt-decode";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,7 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { AuthContext } from "@/context/AuthContext.jsx";
+import { checkIsAdmin } from "@/lib/isAdmin";
 
 export function SignupForm({
   className,
@@ -61,7 +63,23 @@ export function SignupForm({
     });
 
     if (result?.type?.endsWith("/fulfilled")) {
-      navigate("/dashboard");
+      const token = result.payload?.token || result.payload?.jwt || result.payload?.accessToken || (typeof result.payload === 'string' ? result.payload : null);
+      let isAdmin = false;
+
+      if (token) {
+        try {
+          const decoded = jwtDecode(token);
+          isAdmin = checkIsAdmin({ role: decoded.role || decoded.roles });
+        } catch (e) {
+          isAdmin = false;
+        }
+      }
+
+      if (isAdmin) {
+        navigate("/dashboard");
+      } else {
+        navigate("/home");
+      }
     }
   };
 
