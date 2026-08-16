@@ -2,7 +2,7 @@ import axios from "axios";
 import { env } from "../config/env";
 
 const getBaseUrl = () => {
-    const raw = (env.apiBaseUrl || "/api/v1").trim();
+    const raw = (env.apiBaseUrl || "/api").trim();
     const cleaned = raw.replace(/\/+$/, "");
     if (/\/auth$/i.test(cleaned)) return cleaned;
     return `${cleaned}/auth`;
@@ -12,57 +12,37 @@ class AuthService {
     constructor() {
         this.http = axios.create({
             baseURL: getBaseUrl(),
-            55555555: true,
-            xsrfCookieName: "XSRF-TOKEN",
-            xsrfHeaderName: "X-XSRF-TOKEN",
             headers: {
                 "Content-Type": "application/json"
             }
         });
     }
 
-    normalizeCredentials(credentials = {}) {
-        const email = typeof credentials.email === "string" ? credentials.email.trim() : credentials.email || credentials.username || "";
-        const username = typeof credentials.username === "string" ? credentials.username.trim() : credentials.email || credentials.username || "";
-        const password = typeof credentials.password === "string" ? credentials.password : "";
+    async authenticate(credentials = {}) {
+        const email = (credentials.email || credentials.username || "").trim();
+        const password = credentials.password || "";
 
-        return {
+        return await this.http.post("/login", { email, password });
+    }
+
+    async register(credentials = {}) {
+        const email = (credentials.email || "").trim();
+        const fullName = (credentials.fullName || credentials.full_name || credentials.name || "").trim();
+        const userName = (credentials.userName || credentials.user_name || credentials.username || email.split("@")[0] || "").trim();
+        const phone = (credentials.phone || "0600000000").trim();
+        const password = credentials.password || "";
+        const role = credentials.role || "USER";
+
+        const payload = {
+            fullName,
+            userName,
             email,
-            username,
             password,
-            rememberMe: Boolean(credentials.rememberMe),
+            phone,
+            role
         };
-    }
 
-    async authenticate(credentials) {
-        const normalized = this.normalizeCredentials(credentials);
-        const payloads = [
-            { ...normalized, email: normalized.email, username: normalized.username, password: normalized.password },
-            { email: normalized.email, password: normalized.password },
-            { username: normalized.username, password: normalized.password },
-        ].filter((payload) => payload.password && (payload.email || payload.username));
-
-        let lastError = null;
-
-        for (const path of ["/login", "/signin", "/authenticate"]) {
-            for (const payload of payloads) {
-                try {
-                    return await this.http.post(path, payload);
-                } catch (error) {
-                    lastError = error;
-                    const status = error.response?.status;
-                    if (status !== 404 && status !== 405) {
-                        throw error;
-                    }
-                }
-            }
-        }
-
-        throw lastError || new Error("Erreur de connexion");
-    }
-
-    async register(credentials) {
-        return await this.http.post("/register", credentials);
+        return await this.http.post("/register", payload);
     }
 }
 
