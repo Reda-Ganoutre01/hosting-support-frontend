@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar.jsx";
 import Hero from "@/components/layout/Hero.jsx";
 import FeaturesSection from "@/components/layout/FeaturesSection.jsx";
-import HostingPlansSection from "@/components/layout/HostingPlansSection.jsx";
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -87,7 +86,7 @@ export default function HomePage() {
       {/* Royal Blue Blueprint Header & Hero Section */}
       <div className="bg-blueprint text-white relative">
         <Navbar isScrolled={isScrolled} />
-        <Hero 
+        <Hero
           slides={slides}
           currentSlide={currentSlide}
           setCurrentSlide={setCurrentSlide}
@@ -100,11 +99,8 @@ export default function HomePage() {
       {/* Spacing for floating domain card overlap */}
       <div className="h-20"></div>
 
-      {/* Features Section (Image 1) */}
+      {/* Features Section Component */}
       <FeaturesSection />
-
-      {/* Hosting Plans & Solutions Section (Image 2) */}
-      <HostingPlansSection />
     </div>
   );
 }
