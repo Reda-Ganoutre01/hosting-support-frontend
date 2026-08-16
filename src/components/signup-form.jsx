@@ -211,16 +211,6 @@ export function SignupForm({
           </form>
         </CardContent>
       </Card>
-      <FieldDescription className="px-6 text-center">
-        En continuant, vous acceptez nos{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-slate-900 dark:hover:text-slate-100">
-          Conditions d'utilisation
-        </a>{" "}
-        et notre{" "}
-        <a href="#" className="underline underline-offset-4 hover:text-slate-900 dark:hover:text-slate-100">
-          Politique de confidentialité
-        </a>.
-      </FieldDescription>
     </div>
   );
 }
