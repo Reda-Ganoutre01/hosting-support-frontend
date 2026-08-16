@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { User, AlertCircle, Loader2 } from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { AuthContext } from "@/context/AuthContext.jsx";
+import heroImg from "@/assets/hero/hero-thumb.png";
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -31,9 +32,9 @@ export default function LoginPage() {
   return (
     <div className="min-h-screen bg-slate-950 text-white">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-2">
-        <div className="flex flex-col justify-center px-6 py-12 sm:px-12 lg:px-16 bg-white text-slate-900">
-          <div className="max-w-xl mx-auto w-full">
-            <div className="flex items-center gap-3 mb-8">
+        <div className="flex flex-col justify-center px-8 py-20 sm:px-16 lg:px-28 bg-white text-slate-900">
+            <div className="max-w-lg mx-auto w-full">
+              <div className="flex items-center gap-3 mb-8">
               <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-600 text-white shadow-lg shadow-blue-500/20">
                 <User className="h-6 w-6" />
               </div>
@@ -100,7 +101,7 @@ export default function LoginPage() {
                 </a>
               </div>
 
-              <Button type="submit" variant="orange" size="lg" className="w-full flex items-center justify-center gap-2" disabled={loading}>
+              <Button type="submit" size="lg" className="w-full flex items-center justify-center gap-2" disabled={loading}>
                 {loading ? (
                   <>
                     <Loader2 className="h-5 w-5 animate-spin" />
@@ -114,8 +115,11 @@ export default function LoginPage() {
           </div>
         </div>
 
-        <div className="relative hidden lg:flex items-center justify-center overflow-hidden bg-[radial-gradient(circle_at_top_left,_rgba(59,130,246,0.25),_transparent_35%),radial-gradient(circle_at_bottom_right,_rgba(248,113,113,0.25),_transparent_30%),#030b16]">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_left,_rgba(96,165,250,0.18),_transparent_24%),radial-gradient(circle_at_bottom_right,_rgba(249,115,22,0.18),_transparent_22%)]" />
+        <div
+          className="relative hidden lg:flex items-center justify-center overflow-hidden bg-cover bg-center"
+          style={{ backgroundImage: `url(${heroImg})` }}
+        >
+          <div className="absolute inset-0 bg-black/60" />
           <div className="relative z-10 max-w-md px-10 py-12 text-white">
             <p className="text-sm uppercase tracking-[0.35em] text-blue-300">Vala Creative Internet Solutions</p>
             <h2 className="mt-6 text-4xl font-black tracking-tight">Bienvenue dans votre espace client</h2>
@@ -123,7 +127,13 @@ export default function LoginPage() {
               Connectez-vous pour acheter nos produits et services, gérer vos domaines et surveiller votre hébergement avec un tableau de bord moderne.
             </p>
 
-            <div className="mt-10 space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-950/20 backdrop-blur-xl">
+            <div className="mt-6">
+              <Button variant="secondary" size="sm" className="rounded-md" onClick={() => navigate('/register')}>
+                Créer un Nouveau Compte
+              </Button>
+            </div>
+
+            <div className="mt-8 space-y-4 rounded-3xl border border-white/10 bg-white/5 p-6 shadow-xl shadow-slate-950/20 backdrop-blur-xl">
               <div className="flex items-center gap-4">
                 <div className="grid h-11 w-11 place-items-center rounded-3xl bg-blue-500/15 text-blue-200">
                   <span className="text-lg font-bold">01</span>
