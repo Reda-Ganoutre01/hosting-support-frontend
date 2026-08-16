@@ -3,16 +3,22 @@ import { useNavigate } from "react-router-dom";
 import { GalleryVerticalEnd } from "lucide-react";
 import { SignupForm } from "@/components/signup-form";
 import { AuthContext } from "@/context/AuthContext.jsx";
+import { checkIsAdmin } from "@/lib/isAdmin";
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { isAuthenticated } = useContext(AuthContext);
+  const { isAuthenticated, user } = useContext(AuthContext);
 
   useEffect(() => {
     if (isAuthenticated) {
-      navigate("/dashboard");
+      const isAdmin = checkIsAdmin(user);
+      if (isAdmin) {
+        navigate("/dashboard");
+      } else {
+        navigate("/home");
+      }
     }
-  }, [isAuthenticated, navigate]);
+  }, [isAuthenticated, user, navigate]);
 
   return (
     <div className="flex min-h-svh flex-col items-center justify-center gap-6 bg-slate-50 p-6 md:p-10 dark:bg-slate-950">
