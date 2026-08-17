@@ -1,13 +1,47 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import { ChevronDown, User, Server, Globe, ShoppingBag, Layout, Cpu, Shield, HelpCircle, FileText, Smartphone } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
+import { 
+  User, 
+  Server, 
+  Globe, 
+  ShoppingBag, 
+  Layout, 
+  Cpu, 
+  Shield, 
+  HelpCircle, 
+  FileText 
+} from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { Badge } from "@/components/ui/Badge.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
 import logoImg from "@/assets/img/Hebergeur-web-Maroc copy.png";
+import {
+  NavigationMenu,
+  NavigationMenuContent,
+  NavigationMenuItem,
+  NavigationMenuList,
+  NavigationMenuTrigger,
+} from "@/components/ui/navigation-menu.jsx";
 
 export default function Navbar({ isScrolled }) {
   const { user } = useAuth();
+  const location = useLocation();
+  const path = location.pathname;
+
+  // Helper function for active link styling with white underline indicator
+  const getNavLinkClass = (targetPath) => {
+    const isActive = path === targetPath || (targetPath !== "/" && path.startsWith(targetPath));
+    return `relative font-bold transition-all px-3 py-1.5 ${
+      isActive 
+        ? "text-white after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-4/5 after:h-0.5 after:bg-white after:rounded-full" 
+        : "text-white/80 hover:text-amber-300"
+    }`;
+  };
+
+  const isGroupActive = (paths = []) => {
+    return paths.some((p) => path === p || (p !== "/" && path.startsWith(p)));
+  };
+
   return (
     <>
       {/* Top Announcement Bar */}
@@ -33,165 +67,146 @@ export default function Navbar({ isScrolled }) {
             />
           </Link>
 
-          {/* Nav Items with Dropdowns */}
-          <nav className="hidden lg:flex items-center gap-7 font-medium text-white/90 text-sm">
-            <Link to="/" className="text-white font-bold border-b-2 border-white pb-1">Accueil</Link>
-            <Link to="/domain" className="hover:text-amber-300 transition-colors">Domaines</Link>
+          {/* Nav Items with Dynamic Active Indicators */}
+          <nav className="hidden lg:flex items-center gap-2 font-medium text-white/90 text-sm">
+            <Link to="/" className={getNavLinkClass("/")}>Accueil</Link>
+            <Link to="/domain" className={getNavLinkClass("/domain")}>Domaines</Link>
             
-            {/* Hébergement Web Dropdown */}
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1 hover:text-amber-300 transition-colors">
-                <span>Hébergement Web</span>
-                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-amber-300 transition-transform group-hover:rotate-180" />
-              </button>
+            <NavigationMenu>
+              <NavigationMenuList>
 
-              <div className="absolute top-full left-0 hidden group-hover:block w-72 pt-3">
-                <div className="bg-white rounded-2xl p-3 shadow-2xl border border-slate-100 text-slate-800 relative animate-in fade-in slide-in-from-top-2 duration-200">
-                  {/* Arrow tooltip indicator */}
-                  <div className="absolute -top-2 left-8 w-4 h-4 bg-white rotate-45 border-t border-l border-slate-100" />
-                  
-                  <div className="space-y-1 relative z-10">
-                    <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                        <Server className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">Hébergement Linux</div>
-                        <div className="text-xs text-slate-500 font-normal">Performant & optimisé</div>
-                      </div>
-                    </Link>
+                {/* Hébergement Web Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className={isGroupActive(["/plans", "/accounts"]) ? "text-white font-bold after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-4/5 after:h-0.5 after:bg-white after:rounded-full" : ""}>
+                    Hébergement Web
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-72">
+                    <div className="space-y-1">
+                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <Server className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">Hébergement Linux</div>
+                          <div className="text-xs text-slate-500 font-normal">Performant & optimisé</div>
+                        </div>
+                      </Link>
 
-                    <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                        <Globe className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">Hébergement WordPress</div>
-                        <div className="text-xs text-slate-500 font-normal">Vitesse & sécurité maximale</div>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <Globe className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">Hébergement WordPress</div>
+                          <div className="text-xs text-slate-500 font-normal">Vitesse & sécurité maximale</div>
+                        </div>
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-            {/* Serveurs Dropdown */}
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1 hover:text-amber-300 transition-colors">
-                <span>Serveurs</span>
-                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-amber-300 transition-transform group-hover:rotate-180" />
-              </button>
+                {/* Serveurs Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Serveurs</NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-72">
+                    <div className="space-y-1">
+                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <Cpu className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">VPS Cloud & n8n</div>
+                          <div className="text-xs text-slate-500 font-normal">Ressources dédiées scalables</div>
+                        </div>
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              <div className="absolute top-full left-0 hidden group-hover:block w-72 pt-3">
-                <div className="bg-white rounded-2xl p-3 shadow-2xl border border-slate-100 text-slate-800 relative animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="absolute -top-2 left-8 w-4 h-4 bg-white rotate-45 border-t border-l border-slate-100" />
-                  
-                  <div className="space-y-1 relative z-10">
-                    <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                        <Cpu className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">VPS Cloud & n8n</div>
-                        <div className="text-xs text-slate-500 font-normal">Ressources dédiées scalables</div>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
+                {/* Création Web Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>Création Web</NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-80">
+                    <div className="space-y-3">
+                      <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
+                          <ShoppingBag className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site E-commerce</div>
+                          <div className="text-xs text-slate-500 font-normal leading-relaxed">UX & Taux de conversion au top</div>
+                        </div>
+                      </a>
 
-            {/* Création Web Dropdown (As requested in image) */}
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1 hover:text-amber-300 transition-colors">
-                <span>Création Web</span>
-                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-amber-300 transition-transform group-hover:rotate-180" />
-              </button>
+                      <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
+                          <Layout className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site Mojoud</div>
+                          <div className="text-xs text-slate-500 font-normal leading-relaxed">Créez votre site web Sans Codage</div>
+                        </div>
+                      </a>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              <div className="absolute top-full left-1/2 -translate-x-1/2 hidden group-hover:block w-80 pt-3">
-                <div className="bg-white rounded-2xl p-4 shadow-2xl border border-slate-100 text-slate-800 relative animate-in fade-in slide-in-from-top-2 duration-200">
-                  {/* White triangle tooltip pointing upwards */}
-                  <div className="absolute -top-2 left-1/2 -translate-x-1/2 w-4 h-4 bg-white rotate-45 border-t border-l border-slate-100" />
-                  
-                  <div className="space-y-3 relative z-10">
-                    <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
-                        <ShoppingBag className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site E-commerce</div>
-                        <div className="text-xs text-slate-500 font-normal leading-relaxed">UX & Taux de conversion au top</div>
-                      </div>
-                    </a>
+                {/* Services Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger>
+                    <span className="relative">
+                      Services
+                      <Badge variant="emerald" className="absolute -top-3.5 -right-6 text-[9px] px-1.5 py-0 uppercase bg-emerald-500 text-white font-bold">new</Badge>
+                    </span>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-72">
+                    <div className="space-y-1">
+                      <a href="#" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <Shield className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">Certificats SSL</div>
+                          <div className="text-xs text-slate-500 font-normal">Sécurité pour votre marque</div>
+                        </div>
+                      </a>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-                    <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
-                        <Layout className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site Mojoud</div>
-                        <div className="text-xs text-slate-500 font-normal leading-relaxed">Créez votre site web Sans Codage</div>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+                {/* Entreprise Dropdown */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className={isGroupActive(["/contact", "/faq"]) ? "text-white font-bold after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-4/5 after:h-0.5 after:bg-white after:rounded-full" : ""}>
+                    Entreprise
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-72">
+                    <div className="space-y-1">
+                      <Link to="/contact" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <FileText className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">Contactez-nous</div>
+                          <div className="text-xs text-slate-500 font-normal">Support client & assistance 24/7</div>
+                        </div>
+                      </Link>
 
-            {/* Services Dropdown */}
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1 hover:text-amber-300 transition-colors">
-                <span className="relative">
-                  Services
-                  <Badge variant="emerald" className="absolute -top-3.5 -right-6 text-[9px] px-1.5 py-0 uppercase bg-emerald-500 text-white font-bold">new</Badge>
-                </span>
-                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-amber-300 transition-transform group-hover:rotate-180" />
-              </button>
+                      <Link to="/faq" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
+                          <HelpCircle className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm">À propos de Vala</div>
+                          <div className="text-xs text-slate-500 font-normal">Notre vision & engagements</div>
+                        </div>
+                      </Link>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
-              <div className="absolute top-full left-0 hidden group-hover:block w-72 pt-3">
-                <div className="bg-white rounded-2xl p-3 shadow-2xl border border-slate-100 text-slate-800 relative animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="absolute -top-2 left-8 w-4 h-4 bg-white rotate-45 border-t border-l border-slate-100" />
-                  
-                  <div className="space-y-1 relative z-10">
-                    <a href="#" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                        <Shield className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">Certificats SSL</div>
-                        <div className="text-xs text-slate-500 font-normal">Sécurité pour votre marque</div>
-                      </div>
-                    </a>
-                  </div>
-                </div>
-              </div>
-            </div>
+              </NavigationMenuList>
+            </NavigationMenu>
 
-            {/* Entreprise Dropdown */}
-            <div className="relative group py-2">
-              <button className="flex items-center gap-1 hover:text-amber-300 transition-colors">
-                <span>Entreprise</span>
-                <ChevronDown className="w-4 h-4 text-white/70 group-hover:text-amber-300 transition-transform group-hover:rotate-180" />
-              </button>
-
-              <div className="absolute top-full right-0 hidden group-hover:block w-72 pt-3">
-                <div className="bg-white rounded-2xl p-3 shadow-2xl border border-slate-100 text-slate-800 relative animate-in fade-in slide-in-from-top-2 duration-200">
-                  <div className="absolute -top-2 right-8 w-4 h-4 bg-white rotate-45 border-t border-l border-slate-100" />
-                  
-                  <div className="space-y-1 relative z-10">
-                    <Link to="/faq" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                      <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                        <HelpCircle className="w-5 h-5" />
-                      </div>
-                      <div>
-                        <div className="font-bold text-slate-900 text-sm">À propos de Vala</div>
-                        <div className="text-xs text-slate-500 font-normal">Notre vision & engagements</div>
-                      </div>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
           </nav>
 
           {/* Espace Client / Mon Profil Button */}
