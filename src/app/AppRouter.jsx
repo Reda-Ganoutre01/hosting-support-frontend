@@ -17,6 +17,7 @@ import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import FaqPage from "../pages/faq/FaqPage.jsx";
 import DomainPage from "../pages/domain/DomainPage.jsx";
 import ProfilePage from "../pages/profile/ProfilePage.jsx";
+import ContactPage from "../pages/contact/ContactPage.jsx";
 
 export function AppRouter() {
   return (
@@ -33,6 +34,7 @@ export function AppRouter() {
               <Route path="/signup" element={<RegisterPage />} />
               <Route path="/domaine" element={<DomainPage />} />
               <Route path="/domain" element={<DomainPage />} />
+              <Route path="/contact" element={<ContactPage />} />
 
               {/* Protected User Routes */}
               <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
