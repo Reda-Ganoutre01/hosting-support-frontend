@@ -16,6 +16,7 @@ import HostingAccountsPage from "../pages/accounts/HostingAccountsPage.jsx";
 import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import FaqPage from "../pages/faq/FaqPage.jsx";
 import DomainPage from "../pages/domain/DomainPage.jsx";
+import ProfilePage from "../pages/profile/ProfilePage.jsx";
 
 export function AppRouter() {
   return (
@@ -34,6 +35,7 @@ export function AppRouter() {
               <Route path="/domain" element={<DomainPage />} />
 
               {/* Protected User Routes */}
+              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
               <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />

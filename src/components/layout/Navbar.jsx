@@ -3,9 +3,11 @@ import { Link } from "react-router-dom";
 import { ChevronDown, User, Server, Globe, ShoppingBag, Layout, Cpu, Shield, HelpCircle, FileText, Smartphone } from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { Badge } from "@/components/ui/Badge.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import logoImg from "@/assets/img/Hebergeur-web-Maroc copy.png";
 
 export default function Navbar({ isScrolled }) {
+  const { user } = useAuth();
   return (
     <>
       {/* Top Announcement Bar */}
@@ -192,12 +194,12 @@ export default function Navbar({ isScrolled }) {
             </div>
           </nav>
 
-          {/* Espace Client Button */}
+          {/* Espace Client / Mon Profil Button */}
           <div>
-            <Link to="/login">
+            <Link to={user ? "/profile" : "/login"}>
               <Button variant="orange" size="default" className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-lg shadow-orange-500/30 rounded-xl px-5 py-2.5">
                 <User className="w-4 h-4" />
-                <span>Espace client</span>
+                <span>{user ? "Mon Profil" : "Espace client"}</span>
               </Button>
             </Link>
           </div>
