@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar.jsx";
 import { Footer } from "@/components/layout/Footer.jsx";
+import { useToast } from "@/context/ToastContext.jsx";
 import {
   Search,
   ShieldCheck,
@@ -18,7 +19,7 @@ import {
   Server,
   Check,
 } from "lucide-react";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button.jsx";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card.jsx";
 import Input from "@/components/ui/Input.jsx";
 

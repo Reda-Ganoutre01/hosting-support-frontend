@@ -7,7 +7,7 @@ import {
   InstagramIcon, 
   WhatsappIcon 
 } from "@/components/icons/Icons.jsx";
-import { Button } from "@/components/ui/button";
+import Button from "@/components/ui/Button.jsx";
 import { Globe, ShieldCheck, Server, Headset, ArrowUpRight } from "lucide-react";
 
 import logoImg from "@/assets/img/Hebergeur-web-Maroc copy.png";
@@ -86,21 +86,21 @@ export function Footer() {
             <div className="space-y-3 pt-2">
               <span className="text-xs font-semibold uppercase tracking-wider text-blue-200/80">Retrouvez-nous sur</span>
               <div className="flex items-center gap-2">
-                <Button asChild size="icon" variant="ghost" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#3b5998] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105">
-                  <a href="#" aria-label="Facebook"><FacebookIcon className="h-4 w-4 fill-white" /></a>
-                </Button>
-                <Button asChild size="icon" variant="ghost" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#0077b5] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105">
-                  <a href="#" aria-label="LinkedIn"><LinkedinIcon className="h-4 w-4 fill-white" /></a>
-                </Button>
-                <Button asChild size="icon" variant="ghost" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#ff0000] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105">
-                  <a href="#" aria-label="YouTube"><YoutubeIcon className="h-4 w-4 fill-white" /></a>
-                </Button>
-                <Button asChild size="icon" variant="ghost" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#d62976] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105">
-                  <a href="#" aria-label="Instagram"><InstagramIcon className="h-4 w-4 fill-white" /></a>
-                </Button>
-                <Button asChild size="icon" variant="ghost" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#25d366] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105">
-                  <a href="#" aria-label="WhatsApp"><WhatsappIcon className="h-4 w-4 fill-white" /></a>
-                </Button>
+                <a href="#" aria-label="Facebook" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#3b5998] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105 inline-flex items-center justify-center">
+                  <FacebookIcon className="h-4 w-4 fill-white" />
+                </a>
+                <a href="#" aria-label="LinkedIn" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#0077b5] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105 inline-flex items-center justify-center">
+                  <LinkedinIcon className="h-4 w-4 fill-white" />
+                </a>
+                <a href="#" aria-label="YouTube" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#ff0000] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105 inline-flex items-center justify-center">
+                  <YoutubeIcon className="h-4 w-4 fill-white" />
+                </a>
+                <a href="#" aria-label="Instagram" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#d62976] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105 inline-flex items-center justify-center">
+                  <InstagramIcon className="h-4 w-4 fill-white" />
+                </a>
+                <a href="#" aria-label="WhatsApp" className="h-9 w-9 rounded-xl bg-white/10 hover:bg-[#25d366] hover:text-white border border-white/10 transition-all duration-300 hover:scale-105 inline-flex items-center justify-center">
+                  <WhatsappIcon className="h-4 w-4 fill-white" />
+                </a>
               </div>
             </div>
           </div>
