@@ -58,10 +58,13 @@ export default function ProfilePage() {
         }
       }
 
+      const realEmail = activeUser?.email || user?.email || (typeof user?.sub === 'string' && user?.sub.includes('@') ? user?.sub : null);
+      const realName = activeUser?.fullName || activeUser?.full_name || activeUser?.name || activeUser?.userName || (realEmail ? realEmail.split('@')[0] : "Utilisateur Vala");
+
       setFormData({
-        fullName: activeUser?.fullName || activeUser?.full_name || activeUser?.name || activeUser?.userName || activeUser?.username || "Utilisateur Vala",
-        email: activeUser?.email || "compte@vala.ma",
-        role: activeUser?.role || "USER",
+        fullName: realName,
+        email: realEmail || "compte@vala.ma",
+        role: activeUser?.role || user?.role || "USER",
         phone: activeUser?.phone || "+212 6 00 00 00 00",
       });
 

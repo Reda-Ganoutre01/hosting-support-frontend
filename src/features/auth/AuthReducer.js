@@ -54,13 +54,18 @@ const AuthSlice = createSlice({
           state.token = token;
           try {
             const decodedToken = jwtDecode(token);
+            const loginEmail = action.meta?.arg?.email || action.meta?.arg?.username || decodedToken.sub || decodedToken.email;
             state.user = {
-              role: decodedToken.role || decodedToken.roles,
+              email: loginEmail,
+              name: loginEmail ? loginEmail.split("@")[0] : "Utilisateur Vala",
+              role: decodedToken.role || decodedToken.roles || "USER",
               id: decodedToken.id || decodedToken.sub,
               sub: decodedToken.sub,
+              ...action.payload.user
             };
           } catch (e) {
-            state.user = action.payload.user || { email: action.meta.arg.email };
+            const loginEmail = action.meta?.arg?.email || action.meta?.arg?.username;
+            state.user = action.payload.user || { email: loginEmail, name: loginEmail?.split("@")[0] || "Utilisateur Vala" };
           }
           state.isAuthenticated = true;
           state.error = null;
@@ -86,13 +91,18 @@ const AuthSlice = createSlice({
           state.token = token;
           try {
             const decodedToken = jwtDecode(token);
+            const regEmail = action.meta?.arg?.email || decodedToken.sub || decodedToken.email;
             state.user = {
-              role: decodedToken.role || decodedToken.roles,
+              email: regEmail,
+              name: action.meta?.arg?.fullName || regEmail?.split("@")[0] || "Utilisateur Vala",
+              role: decodedToken.role || decodedToken.roles || "USER",
               id: decodedToken.id || decodedToken.sub,
               sub: decodedToken.sub,
+              ...action.payload.user
             };
           } catch (e) {
-            state.user = action.payload.user || { email: action.meta.arg.email };
+            const regEmail = action.meta?.arg?.email;
+            state.user = action.payload.user || { email: regEmail, name: action.meta?.arg?.fullName || "Utilisateur Vala" };
           }
           state.isAuthenticated = true;
           state.error = null;
