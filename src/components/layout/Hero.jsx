@@ -97,18 +97,29 @@ export default function Hero({
           <div className="bg-gradient-to-r from-blue-600 to-blue-700 p-6 sm:p-8 rounded-3xl shadow-2xl border border-blue-400/30">
             
             {/* Domain Input Field */}
-            <div className="flex flex-col sm:flex-row items-center gap-3 bg-white p-2 rounded-2xl shadow-inner">
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (domainQuery.trim()) {
+                  window.location.href = `/domain?q=${encodeURIComponent(domainQuery.trim())}`;
+                }
+              }}
+              className="flex flex-col sm:flex-row items-center gap-3 bg-white p-2 rounded-2xl shadow-inner"
+            >
               <input 
                 type="text" 
                 value={domainQuery}
                 onChange={(e) => setDomainQuery(e.target.value)}
-                placeholder="domain.com"
+                placeholder="Ex: monentreprise.ma"
                 className="w-full px-5 py-3 text-slate-800 text-base outline-none bg-transparent"
               />
-              <Button className="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-8 py-3.5 rounded-xl transition-colors shrink-0">
+              <Button 
+                type="submit"
+                className="w-full sm:w-auto bg-slate-200 hover:bg-slate-300 text-slate-700 font-bold px-8 py-3.5 rounded-xl transition-colors shrink-0"
+              >
                 Rechercher un domaine
               </Button>
-            </div>
+            </form>
 
             {/* Popular Extension Badges */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
