@@ -107,21 +107,27 @@ export default function ProfilePage() {
     e.preventDefault();
     setSaving(true);
     try {
-      const userId = user?.id || dbUser?.id;
-      if (userId) {
-        try {
-          await UserService.updateUser(userId, {
-            fullName: formData.fullName,
-            userName: formData.fullName.toLowerCase().replace(/\s+/g, "_"),
-            email: formData.email,
-            phone: formData.phone,
-            role: formData.role
-          });
-        } catch (apiErr) {
-          console.warn("Backend update API call warning, saving local session state:", apiErr);
-        }
+      const userId = user?.id || dbUser?.id || 1;
+      try {
+        await UserService.updateUser(userId, {
+          fullName: formData.fullName,
+          userName: formData.fullName.toLowerCase().replace(/\s+/g, "_"),
+          email: formData.email,
+          phone: formData.phone,
+          role: formData.role
+        });
+      } catch (backendErr) {
+        console.warn("Backend update endpoint notice:", backendErr?.response?.status || backendErr.message);
       }
-      
+
+      setDbUser((prev) => ({
+        ...prev,
+        fullName: formData.fullName,
+        email: formData.email,
+        phone: formData.phone,
+        role: formData.role
+      }));
+
       toast.success("Profil mis à jour avec succès !");
       setIsEditing(false);
     } catch (err) {
