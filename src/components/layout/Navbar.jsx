@@ -32,8 +32,8 @@ export default function Navbar({ isScrolled }) {
 
           {/* Nav Items */}
           <nav className="hidden lg:flex items-center gap-7 font-medium text-white/90 text-sm">
-            <a href="#" className="text-white font-bold border-b-2 border-white pb-1">Accueil</a>
-            <a href="#" className="hover:text-amber-300 transition-colors">Domaines</a>
+            <Link to="/" className="text-white font-bold border-b-2 border-white pb-1">Accueil</Link>
+            <Link to="/domaine" className="hover:text-amber-300 transition-colors">Domaines</Link>
             
             <div className="relative group cursor-pointer flex items-center gap-1 hover:text-amber-300 transition-colors py-2">
               <span>Hébergement Web</span>
