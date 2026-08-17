@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar.jsx";
-import { useToast } from "@/context/ToastContext.jsx";
+import { Footer } from "@/components/layout/Footer.jsx";
 import {
   Search,
   ShieldCheck,
@@ -390,15 +390,7 @@ export default function DomainPage() {
         </section>
       </main>
 
-      <footer className="border-t border-slate-200 bg-white">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-4 py-8 text-sm text-slate-500 sm:flex-row sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 font-semibold text-slate-900">
-            <Star className="h-4 w-4 text-amber-500" />
-            Vala Hosting
-          </div>
-          <p>© 2026 Vala Hosting Maroc — Tous droits réservés.</p>
-        </div>
-      </footer>
+      <Footer />
     </div>
   );
 }

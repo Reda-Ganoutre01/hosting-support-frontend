@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import Navbar from "@/components/layout/Navbar.jsx";
 import Hero from "@/components/layout/Hero.jsx";
 import FeaturesSection from "@/components/layout/FeaturesSection.jsx";
+import { Footer } from "@/components/layout/Footer.jsx";
 
 export default function HomePage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -101,6 +102,9 @@ export default function HomePage() {
 
       {/* Features Section Component */}
       <FeaturesSection />
+
+      {/* Footer */}
+      <Footer />
     </div>
   );
 }
