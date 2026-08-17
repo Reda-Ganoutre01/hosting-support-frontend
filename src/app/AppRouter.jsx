@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import AuthProvider from "@/context/AuthProvider.jsx";
 import { ToastProvider } from "@/context/ToastContext.jsx";
 import ProtectedRoute from "@/components/auth/ProtectedRoute.jsx";
+import AdminBlockRoute from "@/components/auth/AdminBlockRoute.jsx";
 import { LoadingPage } from "../pages/loading/LoadingPage.jsx";
 
 import HomePage from "../pages/HomePage.jsx";
@@ -26,17 +27,17 @@ export function AppRouter() {
         <Suspense fallback={<LoadingPage />}>
           <Router>
             <Routes>
-              {/* Public Routes */}
-              <Route path="/" element={<HomePage />} />
-              <Route path="/home" element={<HomePage />} />
+              {/* Client Routes - Blocked for Admins and redirected to /dashboard */}
+              <Route path="/" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
+              <Route path="/home" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
               <Route path="/login" element={<LoginPage />} />
               <Route path="/register" element={<RegisterPage />} />
               <Route path="/signup" element={<RegisterPage />} />
-              <Route path="/domaine" element={<DomainPage />} />
-              <Route path="/domain" element={<DomainPage />} />
-              <Route path="/contact" element={<ContactPage />} />
+              <Route path="/domaine" element={<AdminBlockRoute><DomainPage /></AdminBlockRoute>} />
+              <Route path="/domain" element={<AdminBlockRoute><DomainPage /></AdminBlockRoute>} />
+              <Route path="/contact" element={<AdminBlockRoute><ContactPage /></AdminBlockRoute>} />
 
-              {/* Protected User Routes */}
+              {/* Client User Routes */}
               <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
@@ -45,7 +46,7 @@ export function AppRouter() {
               <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
               <Route path="/faq" element={<ProtectedRoute><FaqPage /></ProtectedRoute>} />
 
-              {/* Protected Admin Routes */}
+              {/* Protected Admin Only Routes */}
               <Route path="/dashboard" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
               <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><TicketsPage /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
