@@ -209,14 +209,22 @@ export default function Navbar({ isScrolled }) {
 
           </nav>
 
-          {/* Espace Client / Mon Profil Button */}
+          {/* Admin Dashboard / Mon Profil / Espace Client Button */}
           <div>
-            <Link to={user ? "/profile" : "/login"}>
-              <Button variant="orange" size="default" className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-lg shadow-orange-500/30 rounded-xl px-5 py-2.5">
-                <User className="w-4 h-4" />
-                <span>{user ? "Mon Profil" : "Espace client"}</span>
-              </Button>
-            </Link>
+            {(() => {
+              const isAdmin = user && (user.role === "ADMIN" || user.role === "ROLE_ADMIN");
+              const targetRoute = !user ? "/login" : isAdmin ? "/dashboard" : "/profile";
+              const buttonText = !user ? "Espace client" : isAdmin ? "Tableau de Bord Admin" : "Mon Profil";
+
+              return (
+                <Link to={targetRoute}>
+                  <Button variant="orange" size="default" className="flex items-center gap-2 bg-orange-500 hover:bg-orange-600 text-white font-bold shadow-lg shadow-orange-500/30 rounded-xl px-5 py-2.5">
+                    <User className="w-4 h-4" />
+                    <span>{buttonText}</span>
+                  </Button>
+                </Link>
+              );
+            })()}
           </div>
 
         </div>
