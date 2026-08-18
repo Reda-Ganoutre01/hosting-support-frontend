@@ -104,9 +104,8 @@ export function AppSidebar({ ...props }) {
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link to="/dashboard" className="flex items-center gap-2.5">
-                <img src={logoImg} alt="ValaHosting Logo" className="h-7 w-auto object-contain shrink-0" />
-                <span className="text-base font-semibold text-sidebar-foreground">Vala Admin</span>
+              <Link to="/dashboard" className="flex items-center">
+                <img src={logoImg} alt="ValaHosting Logo" className="h-8 w-auto object-contain shrink-0" />
               </Link>
             </SidebarMenuButton>
           </SidebarMenuItem>
