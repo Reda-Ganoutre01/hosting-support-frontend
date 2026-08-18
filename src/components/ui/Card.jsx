@@ -1,11 +1,11 @@
-import React from "react";
+import * as React from "react";
 import { cn } from "@/lib/utils";
 
 export function Card({ className, ...props }) {
   return (
     <div
       className={cn(
-        "rounded-xl border border-slate-200 bg-white text-slate-950 shadow-sm dark:border-slate-800 dark:bg-slate-950 dark:text-slate-50",
+        "rounded-xl border bg-card text-card-foreground shadow-sm transition-all",
         className
       )}
       {...props}
@@ -15,14 +15,17 @@ export function Card({ className, ...props }) {
 
 export function CardHeader({ className, ...props }) {
   return (
-    <div className={cn("flex flex-col space-y-1.5 p-6", className)} {...props} />
+    <div
+      className={cn("flex flex-col space-y-1.5 p-6 relative", className)}
+      {...props}
+    />
   );
 }
 
 export function CardTitle({ className, ...props }) {
   return (
     <h3
-      className={cn("text-2xl font-semibold leading-none tracking-tight text-slate-900 dark:text-slate-50", className)}
+      className={cn("font-semibold leading-none tracking-tight text-lg", className)}
       {...props}
     />
   );
@@ -30,7 +33,10 @@ export function CardTitle({ className, ...props }) {
 
 export function CardDescription({ className, ...props }) {
   return (
-    <p className={cn("text-sm text-slate-500 dark:text-slate-400", className)} {...props} />
+    <p
+      className={cn("text-sm text-muted-foreground", className)}
+      {...props}
+    />
   );
 }
 
@@ -40,8 +46,18 @@ export function CardContent({ className, ...props }) {
 
 export function CardFooter({ className, ...props }) {
   return (
-    <div className={cn("flex items-center p-6 pt-0", className)} {...props} />
+    <div
+      className={cn("flex items-center p-6 pt-0", className)}
+      {...props}
+    />
   );
 }
 
-export default Card;
+export function CardAction({ className, ...props }) {
+  return (
+    <div
+      className={cn("absolute right-6 top-6 flex items-center gap-2", className)}
+      {...props}
+    />
+  );
+}
