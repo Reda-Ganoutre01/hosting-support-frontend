@@ -11,7 +11,6 @@ import {
   IconUsers,
   IconSettings,
   IconHelp,
-  IconSearch,
   IconShieldCheck,
   IconServer
 } from "@tabler/icons-react";
@@ -19,7 +18,6 @@ import {
 import {
   Sidebar,
   SidebarContent,
-  SidebarFooter,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
@@ -28,14 +26,8 @@ import {
 import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
-import { NavUser } from "./nav-user";
 
 const data = {
-  user: {
-    name: "Admin User",
-    email: "admin@valahosting.com",
-    avatar: "/avatars/shadcn.jpg"
-  },
   navMain: [
     {
       title: "Dashboard",
@@ -126,9 +118,6 @@ export function AppSidebar({ ...props }) {
         <NavDocuments items={data.documents} />
         <NavSecondary items={data.navSecondary} className="mt-auto" />
       </SidebarContent>
-      <SidebarFooter>
-        <NavUser />
-      </SidebarFooter>
     </Sidebar>
   );
 }
