@@ -1,0 +1,92 @@
+[
+  {
+    "id": 1,
+    "header": "cloud-app-prod.valahosting.ma",
+    "type": "VPS Cloud 8GB",
+    "status": "Active",
+    "target": "85%",
+    "limit": "100GB",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 2,
+    "header": "e-commerce-shop.com",
+    "type": "cPanel Enterprise",
+    "status": "Active",
+    "target": "42%",
+    "limit": "50GB",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 3,
+    "header": "api-gateway-cluster-01",
+    "type": "Dedicated Node",
+    "status": "Active",
+    "target": "91%",
+    "limit": "500GB",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 4,
+    "header": "agency-portfolio-site.ma",
+    "type": "Shared Hosting Pro",
+    "status": "Maintenance",
+    "target": "12%",
+    "limit": "20GB",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 5,
+    "header": "billing-integration-srv",
+    "type": "Micro instance",
+    "status": "Active",
+    "target": "68%",
+    "limit": "10GB",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 6,
+    "header": "client-backup-vault-02",
+    "type": "Storage Node",
+    "status": "Active",
+    "target": "78%",
+    "limit": "2TB",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 7,
+    "header": "magento-storefront.net",
+    "type": "VPS Cloud 16GB",
+    "status": "Maintenance",
+    "target": "95%",
+    "limit": "250GB",
+    "reviewer": "Jamik Tashpulatov"
+  },
+  {
+    "id": 8,
+    "header": "saas-starter-hub.io",
+    "type": "cPanel Pro",
+    "status": "Active",
+    "target": "34%",
+    "limit": "30GB",
+    "reviewer": "Assign reviewer"
+  },
+  {
+    "id": 9,
+    "header": "dns-primary-ns1.valahosting.ma",
+    "type": "DNS Cluster",
+    "status": "Active",
+    "target": "15%",
+    "limit": "5GB",
+    "reviewer": "Eddie Lake"
+  },
+  {
+    "id": 10,
+    "header": "corporate-portal.org",
+    "type": "cPanel Enterprise",
+    "status": "Active",
+    "target": "56%",
+    "limit": "80GB",
+    "reviewer": "Assign reviewer"
+  }
+]
