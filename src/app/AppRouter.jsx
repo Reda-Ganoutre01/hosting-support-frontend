@@ -43,6 +43,10 @@ export function AppRouter() {
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
               <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
               <Route path="/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/hosting-accounts" element={<ProtectedRoute requireAdmin><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/domains" element={<ProtectedRoute requireAdmin><DomainPage /></ProtectedRoute>} />
+              <Route path="/servers" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
               <Route path="/faq" element={<ProtectedRoute><FaqPage /></ProtectedRoute>} />
 

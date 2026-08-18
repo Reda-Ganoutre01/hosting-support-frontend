@@ -3,7 +3,23 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Server, Globe, RefreshCw, XCircle, Loader2 } from "lucide-react";
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/Badge";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 export default function HostingAccountsPage() {
   const toast = useToast();
@@ -57,76 +73,103 @@ export default function HostingAccountsPage() {
     <AppLayout breadcrumbs={[{ label: "Mes Hébergements" }]}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Mes Comptes Hébergement</h1>
-          <p className="text-slate-400 text-sm mt-1">Gérez vos domaines, renouvellements et statut de vos serveurs.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
+            Mes Comptes Hébergement
+          </h1>
+          <p className="text-muted-foreground text-sm mt-1">
+            Gérez vos domaines, renouvellements et statut de vos serveurs.
+          </p>
         </div>
 
-        <select
-          value={statusFilter}
-          onChange={(e) => setStatusFilter(e.target.value)}
-          className="bg-slate-900 border border-slate-800 text-xs font-semibold text-slate-200 rounded-xl px-4 py-2 focus:outline-none focus:border-blue-500"
-        >
-          <option value="ALL">Tous les Statuts</option>
-          <option value="ACTIVE">Actif</option>
-          <option value="SUSPENDED">Suspendu</option>
-        </select>
+        <Select value={statusFilter} onValueChange={setStatusFilter}>
+          <SelectTrigger className="w-44 bg-card border-border text-foreground">
+            <SelectValue placeholder="Tous les Statuts" />
+          </SelectTrigger>
+          <SelectContent className="bg-popover border-border text-popover-foreground">
+            <SelectItem value="ALL">Tous les Statuts</SelectItem>
+            <SelectItem value="ACTIVE">Actif</SelectItem>
+            <SelectItem value="SUSPENDED">Suspendu</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
 
       {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
+        <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-3">
           <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          <p className="text-sm">Chargement de vos hébergements...</p>
+          <p className="text-sm font-medium">Chargement de vos hébergements...</p>
         </div>
       ) : filteredAccounts.length === 0 ? (
-        <div className="py-16 text-center bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-4">
-          <Server className="h-12 w-12 text-slate-600 mx-auto" />
+        <Card className="py-16 text-center bg-card border-border p-8 space-y-4">
+          <Server className="h-12 w-12 text-muted-foreground mx-auto" />
           <div className="space-y-1">
-            <h3 className="font-bold text-lg text-slate-200">Aucun hébergement actif</h3>
-            <p className="text-sm text-slate-400">Souscrivez à une offre d'hébergement pour lancer votre site web.</p>
+            <h3 className="font-bold text-lg text-foreground">Aucun hébergement actif</h3>
+            <p className="text-sm text-muted-foreground">
+              Souscrivez à une offre d'hébergement pour lancer votre site web.
+            </p>
           </div>
-        </div>
+        </Card>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredAccounts.map((acc) => {
             const isActive = acc.status === "ACTIVE";
             return (
-              <div key={acc.id} className="bg-slate-900 border border-slate-800 rounded-2xl p-6 space-y-5 shadow-xl">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-400">
-                      <Globe className="h-5 w-5" />
+              <Card key={acc.id} className="bg-card border-border shadow-sm flex flex-col justify-between">
+                <CardHeader className="space-y-4">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-xl bg-blue-500/10 border border-blue-500/20 flex items-center justify-center text-blue-500">
+                        <Globe className="h-5 w-5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-base text-foreground font-bold">
+                          {acc.domainName || "domaine.com"}
+                        </CardTitle>
+                        <CardDescription className="text-xs text-muted-foreground">
+                          Plan #{acc.hostingPlanId || 1}
+                        </CardDescription>
+                      </div>
                     </div>
-                    <div>
-                      <h3 className="font-bold text-white text-base">{acc.domainName || "domaine.com"}</h3>
-                      <p className="text-xs text-slate-400">Plan #{acc.hostingPlanId || 1}</p>
-                    </div>
+
+                    <Badge
+                      variant="outline"
+                      className={
+                        isActive
+                          ? "border-emerald-500/30 text-emerald-500 bg-emerald-500/10"
+                          : "border-red-500/30 text-red-500 bg-red-500/10"
+                      }>
+                      {isActive ? "Actif" : "Suspendu"}
+                    </Badge>
                   </div>
+                </CardHeader>
 
-                  <span className={`px-2.5 py-0.5 rounded-full text-xs font-bold ${isActive ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20" : "bg-red-500/10 text-red-400 border border-red-500/20"}`}>
-                    {isActive ? "Actif" : "Suspendu"}
-                  </span>
-                </div>
-
-                <div className="space-y-2 border-t border-b border-slate-800/80 py-3 text-xs text-slate-400">
+                <CardContent className="space-y-2 border-t border-b border-border py-3 text-xs text-muted-foreground">
                   <div className="flex items-center justify-between">
                     <span>Date de début:</span>
-                    <span className="font-medium text-slate-200">{acc.startDate || "2026-01-01"}</span>
+                    <span className="font-medium text-foreground">{acc.startDate || "2026-01-01"}</span>
                   </div>
                   <div className="flex items-center justify-between">
                     <span>Expiration:</span>
-                    <span className="font-medium text-slate-200">{acc.expirationDate || "2027-01-01"}</span>
+                    <span className="font-medium text-foreground">{acc.expirationDate || "2027-01-01"}</span>
                   </div>
-                </div>
+                </CardContent>
 
-                <div className="flex items-center justify-between gap-3">
-                  <Button size="sm" variant="outline" onClick={() => handleRenew(acc.id)} className="flex-1 flex items-center justify-center gap-1.5 text-xs">
+                <CardFooter className="pt-4 flex items-center justify-between gap-3">
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleRenew(acc.id)}
+                    className="flex-1 flex items-center justify-center gap-1.5 text-xs">
                     <RefreshCw className="h-3.5 w-3.5" /> Renouveler
                   </Button>
-                  <Button size="sm" variant="destructive" onClick={() => handleCancel(acc.id)} className="flex items-center justify-center gap-1.5 text-xs">
+                  <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => handleCancel(acc.id)}
+                    className="flex items-center justify-center gap-1.5 text-xs">
                     <XCircle className="h-3.5 w-3.5" /> Suspendre
                   </Button>
-                </div>
-              </div>
+                </CardFooter>
+              </Card>
             );
           })}
         </div>
