@@ -175,8 +175,9 @@ export default function UsersManagementPage() {
       fetchUsers();
     } catch (err) {
       console.error("Create user error:", err);
-      const errMsg = err.response?.data || "Failed to create user. Ensure email/username are unique.";
-      toast.error(typeof errMsg === "string" ? errMsg : "Failed to create user.");
+      const serverErr = err.response?.data;
+      const errMsg = typeof serverErr === "string" ? serverErr : serverErr?.message || "Failed to create user. Ensure email/username are unique.";
+      toast.error(errMsg);
     } finally {
       setSubmitting(false);
     }
@@ -202,7 +203,9 @@ export default function UsersManagementPage() {
       fetchUsers();
     } catch (err) {
       console.error("Update user error:", err);
-      toast.error("Failed to update user.");
+      const serverErr = err.response?.data;
+      const errMsg = typeof serverErr === "string" ? serverErr : serverErr?.message || "Failed to update user.";
+      toast.error(errMsg);
     } finally {
       setSubmitting(false);
     }
@@ -213,14 +216,20 @@ export default function UsersManagementPage() {
     try {
       const updatedStatus = !user.enabled;
       await AdminService.updateUser(user.id, {
-        ...user,
+        fullName: user.fullName,
+        userName: user.userName,
+        email: user.email,
+        phone: user.phone,
+        role: user.role,
         enabled: updatedStatus
       });
       toast.success(`User status updated to ${updatedStatus ? "Active" : "Disabled"}.`);
       fetchUsers();
     } catch (err) {
       console.error("Toggle status error:", err);
-      toast.error("Failed to update status.");
+      const serverErr = err.response?.data;
+      const errMsg = typeof serverErr === "string" ? serverErr : serverErr?.message || "Failed to update status.";
+      toast.error(errMsg);
     }
   };
 
