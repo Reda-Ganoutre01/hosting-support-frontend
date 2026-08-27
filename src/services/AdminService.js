@@ -2,8 +2,8 @@ import api from "@/lib/axios";
 
 class AdminService {
   // Users CRUD
-  async getUsers() {
-    return api.get("/users");
+  async getUsers(params = {}) {
+    return api.get("/users", { params });
   }
   async getUserById(id) {
     return api.get(`/users/${id}`);
