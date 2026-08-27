@@ -19,12 +19,8 @@ export default function ProtectedRoute({ children, requireAdmin = false }) {
     return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
-  if (!requireAdmin && checkIsAdmin(user)) {
-    return <Navigate to="/dashboard" replace />;
-  }
-
   if (requireAdmin && !checkIsAdmin(user)) {
-    return <Navigate to="/home" replace />;
+    return <Navigate to="/client/dashboard" replace />;
   }
 
   return children;
