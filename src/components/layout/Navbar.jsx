@@ -71,39 +71,10 @@ export default function Navbar({ isScrolled }) {
           <nav className="hidden lg:flex items-center gap-2 font-medium text-white/90 text-sm">
             <Link to="/" className={getNavLinkClass("/")}>Accueil</Link>
             <Link to="/domain" className={getNavLinkClass("/domain")}>Domaines</Link>
+            <Link to="/plans" className={getNavLinkClass("/plans")}>Hébergement Web</Link>
             
             <NavigationMenu>
               <NavigationMenuList>
-
-                {/* Hébergement Web Dropdown */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className={isGroupActive(["/plans", "/accounts"]) ? "text-white font-bold after:content-[''] after:absolute after:bottom-0 after:left-1/2 after:-translate-x-1/2 after:w-4/5 after:h-0.5 after:bg-white after:rounded-full" : ""}>
-                    Hébergement Web
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="w-72">
-                    <div className="space-y-1">
-                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                          <Server className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm">Hébergement Linux</div>
-                          <div className="text-xs text-slate-500 font-normal">Performant & optimisé</div>
-                        </div>
-                      </Link>
-
-                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                          <Globe className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm">Hébergement WordPress</div>
-                          <div className="text-xs text-slate-500 font-normal">Vitesse & sécurité maximale</div>
-                        </div>
-                      </Link>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
 
                 {/* Serveurs Dropdown */}
                 <NavigationMenuItem>
