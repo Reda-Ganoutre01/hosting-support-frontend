@@ -66,11 +66,12 @@ export default function UsersManagementPage() {
     setLoading(true);
     try {
       const response = await AdminService.getUsers();
-      if (Array.isArray(response.data)) {
-        setUsers(response.data);
-      } else {
-        setUsers([]);
-      }
+      const userList = Array.isArray(response.data)
+        ? response.data
+        : response.data?.content && Array.isArray(response.data.content)
+        ? response.data.content
+        : [];
+      setUsers(userList);
     } catch (err) {
       console.error("Error loading users:", err);
       toast.error("Failed to load clients and users from backend server.");
