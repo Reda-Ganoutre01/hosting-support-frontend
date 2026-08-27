@@ -102,7 +102,7 @@ export function SidebarMenuItem({ children, className, ...props }) {
   return <li className={cn("relative group/menu-item", className)} {...props}>{children}</li>;
 }
 
-export function SidebarMenuButton({ children, asChild, className, size = "default", tooltip, ...props }) {
+export function SidebarMenuButton({ children, asChild, className, size = "default", tooltip, isActive, ...props }) {
   const { expanded } = useSidebar();
   const Component = asChild ? "div" : "button";
 
@@ -110,6 +110,7 @@ export function SidebarMenuButton({ children, asChild, className, size = "defaul
     <Component
       className={cn(
         "flex w-full items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium text-sidebar-foreground transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+        isActive && "bg-blue-600/10 text-blue-600 font-semibold dark:bg-blue-500/20 dark:text-blue-400",
         size === "lg" && "py-2.5 px-3",
         !expanded && "justify-center px-0",
         className
