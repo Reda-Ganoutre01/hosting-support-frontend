@@ -77,7 +77,11 @@ export default function AdminHostingAccountsPage() {
         AdminService.getUsersPaginated(0, 100),
       ]);
       setPlans(Array.isArray(plansRes.data) ? plansRes.data : []);
-      const userList = usersRes.data?.content || Array.isArray(usersRes.data) ? usersRes.data : [];
+      const userList = Array.isArray(usersRes.data)
+        ? usersRes.data
+        : usersRes.data?.content && Array.isArray(usersRes.data.content)
+        ? usersRes.data.content
+        : [];
       setUsers(userList);
 
       setFormData({
