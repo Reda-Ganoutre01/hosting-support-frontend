@@ -1,5 +1,5 @@
 import { Suspense } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route, Navigate } from "react-router-dom";
 import AuthProvider from "@/context/AuthProvider.jsx";
 import { ToastProvider } from "@/context/ToastContext.jsx";
 import ProtectedRoute from "@/components/auth/ProtectedRoute.jsx";
@@ -10,6 +10,8 @@ import HomePage from "../pages/HomePage.jsx";
 import LoginPage from "../pages/LoginPage.jsx";
 import RegisterPage from "../pages/RegisterPage.jsx";
 import DashboardPage from "../pages/DashboardPage.jsx";
+import AdminDashboardPage from "../pages/admin/AdminDashboardPage.jsx";
+import ClientDashboardPage from "../pages/client/ClientDashboardPage.jsx";
 import TicketsPage from "../pages/tickets/TicketsPage.jsx";
 import TicketDetailPage from "../pages/tickets/TicketDetailPage.jsx";
 import PlansPage from "../pages/plans/PlansPage.jsx";
@@ -21,6 +23,12 @@ import ProfilePage from "../pages/profile/ProfilePage.jsx";
 import ContactPage from "../pages/contact/ContactPage.jsx";
 import UsersManagementPage from "../pages/admin/UsersManagementPage.jsx";
 
+import AiAssistantPage from "../pages/client/AiAssistantPage.jsx";
+import ClientSettingsPage from "../pages/client/ClientSettingsPage.jsx";
+import WorkflowLogsPage from "../pages/admin/WorkflowLogsPage.jsx";
+import AdminSettingsPage from "../pages/admin/AdminSettingsPage.jsx";
+import NotFoundPage from "../pages/NotFoundPage.jsx";
+
 export function AppRouter() {
   return (
     <AuthProvider>
@@ -28,7 +36,7 @@ export function AppRouter() {
         <Suspense fallback={<LoadingPage />}>
           <Router>
             <Routes>
-              {/* Client Routes - Blocked for Admins and redirected to /dashboard */}
+              {/* Public Routes */}
               <Route path="/" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
               <Route path="/home" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
               <Route path="/login" element={<LoginPage />} />
@@ -38,23 +46,45 @@ export function AppRouter() {
               <Route path="/domain" element={<AdminBlockRoute><DomainPage /></AdminBlockRoute>} />
               <Route path="/contact" element={<AdminBlockRoute><ContactPage /></AdminBlockRoute>} />
 
-              {/* Client User Routes */}
+              {/* Dynamic Dashboard Redirect */}
+              <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
+
+              {/* Client Routes */}
+              <Route path="/client/dashboard" element={<ProtectedRoute><ClientDashboardPage /></ProtectedRoute>} />
+              <Route path="/client/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/client/hosting" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/client/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
+              <Route path="/client/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
+              <Route path="/client/ai-assistant" element={<ProtectedRoute><AiAssistantPage /></ProtectedRoute>} />
+              <Route path="/client/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
+              <Route path="/client/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/client/settings" element={<ProtectedRoute><ClientSettingsPage /></ProtectedRoute>} />
+
+              {/* Protected Admin Routes */}
+              <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboardPage /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
+              <Route path="/admin/hosting-plans" element={<ProtectedRoute requireAdmin><PlansPage /></ProtectedRoute>} />
+              <Route path="/admin/hosting-accounts" element={<ProtectedRoute requireAdmin><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><TicketsPage /></ProtectedRoute>} />
+              <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><FaqPage /></ProtectedRoute>} />
+              <Route path="/admin/workflow-logs" element={<ProtectedRoute requireAdmin><WorkflowLogsPage /></ProtectedRoute>} />
+              <Route path="/admin/notifications" element={<ProtectedRoute requireAdmin><NotificationsPage /></ProtectedRoute>} />
+              <Route path="/admin/profile" element={<ProtectedRoute requireAdmin><ProfilePage /></ProtectedRoute>} />
+              <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettingsPage /></ProtectedRoute>} />
+
+              {/* Shortcuts / Backward Compatibility */}
               <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
               <Route path="/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
               <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
               <Route path="/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
-              <Route path="/hosting-accounts" element={<ProtectedRoute requireAdmin><HostingAccountsPage /></ProtectedRoute>} />
-              <Route path="/domains" element={<ProtectedRoute requireAdmin><DomainPage /></ProtectedRoute>} />
-              <Route path="/servers" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
+              <Route path="/hosting-accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
               <Route path="/faq" element={<ProtectedRoute><FaqPage /></ProtectedRoute>} />
 
-              {/* Protected Admin Only Routes */}
-              <Route path="/dashboard" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
-              <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><TicketsPage /></ProtectedRoute>} />
-              <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
+              {/* 404 Fallback */}
+              <Route path="*" element={<NotFoundPage />} />
             </Routes>
           </Router>
         </Suspense>
@@ -64,3 +94,4 @@ export function AppRouter() {
 }
 
 export default AppRouter;
+
