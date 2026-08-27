@@ -1,6 +1,15 @@
-import React from "react";
-import AdminDashboardPage from "./admin/AdminDashboardPage";
+import React, { useContext } from "react";
+import { Navigate } from "react-router-dom";
+import { AuthContext } from "@/context/AuthContext.jsx";
+import { checkIsAdmin } from "@/lib/isAdmin";
 
 export default function DashboardPage() {
-  return <AdminDashboardPage />;
+  const { user } = useContext(AuthContext);
+
+  if (checkIsAdmin(user)) {
+    return <Navigate to="/admin/dashboard" replace />;
+  }
+
+  return <Navigate to="/client/dashboard" replace />;
 }
+
