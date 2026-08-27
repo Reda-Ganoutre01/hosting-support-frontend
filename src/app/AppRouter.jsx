@@ -36,6 +36,7 @@ import AdminSettingsPage from "../pages/admin/AdminSettingsPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { checkIsAdmin } from "@/lib/isAdmin.js";
+import AiChatWidget from "@/components/ai/AiChatWidget.jsx";
 
 function ProfileRedirect() {
   const { user } = useAuth();
@@ -43,6 +44,12 @@ function ProfileRedirect() {
     return <Navigate to="/admin/profile" replace />;
   }
   return <Navigate to="/client/profile" replace />;
+}
+
+function ClientAiChatWidgetWrapper() {
+  const { user } = useAuth();
+  if (checkIsAdmin(user)) return null;
+  return <AiChatWidget />;
 }
 
 export function AppRouter() {
@@ -103,6 +110,7 @@ export function AppRouter() {
               {/* 404 Fallback */}
               <Route path="*" element={<NotFoundPage />} />
             </Routes>
+            <ClientAiChatWidgetWrapper />
           </Router>
         </Suspense>
       </ToastProvider>
