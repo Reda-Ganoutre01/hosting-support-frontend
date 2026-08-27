@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import TicketService from "@/services/TicketService.js";
+import AdminService from "@/services/AdminService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { LifeBuoy, Search, Filter, MessageSquare, CheckCircle, Clock, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -29,6 +30,7 @@ export default function AdminTicketsPage() {
   const toast = useToast();
 
   const [tickets, setTickets] = useState([]);
+  const [usersMap, setUsersMap] = useState({});
   const [loading, setLoading] = useState(true);
 
   // Filter state
@@ -39,8 +41,20 @@ export default function AdminTicketsPage() {
   const loadTickets = async () => {
     setLoading(true);
     try {
-      const res = await TicketService.getTickets();
-      setTickets(Array.isArray(res.data) ? res.data : []);
+      const [ticketsRes, usersRes] = await Promise.all([
+        TicketService.getTickets(),
+        AdminService.getUsers().catch(() => ({ data: [] }))
+      ]);
+      setTickets(Array.isArray(ticketsRes.data) ? ticketsRes.data : []);
+
+      const userList = Array.isArray(usersRes.data)
+        ? usersRes.data
+        : usersRes.data?.content && Array.isArray(usersRes.data.content)
+        ? usersRes.data.content
+        : [];
+      const uMap = {};
+      userList.forEach((u) => { uMap[u.id] = u; });
+      setUsersMap(uMap);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors du chargement des tickets.");
@@ -56,7 +70,7 @@ export default function AdminTicketsPage() {
   const handleUpdateStatus = async (id, newStatus) => {
     try {
       await TicketService.updateTicket(id, { status: newStatus });
-      toast.success(`Statut du ticket #${id} mis à jour : ${newStatus}`);
+      toast.success(`Statut du ticket #${id} mis à jour.`);
       loadTickets();
     } catch (err) {
       console.error(err);
@@ -70,6 +84,21 @@ export default function AdminTicketsPage() {
     const matchesPriority = priorityFilter === "ALL" || ticket.priority === priorityFilter;
     return matchesSubject && matchesStatus && matchesPriority;
   });
+
+  const getStatusBadge = (status) => {
+    switch (status) {
+      case "OPEN":
+        return <Badge className="bg-blue-500/10 text-blue-500 border border-blue-500/30">Ouvert</Badge>;
+      case "IN_PROGRESS":
+        return <Badge className="bg-amber-500/10 text-amber-500 border border-amber-500/30">En cours</Badge>;
+      case "RESOLVED":
+        return <Badge className="bg-emerald-500/10 text-emerald-500 border border-emerald-500/30">Résolu</Badge>;
+      case "CLOSED":
+        return <Badge className="bg-slate-500/10 text-slate-400 border border-slate-500/30">Fermé</Badge>;
+      default:
+        return <Badge variant="secondary">{status || "Ouvert"}</Badge>;
+    }
+  };
 
   return (
     <AppLayout breadcrumbs={[{ label: "Administration" }, { label: "Tickets de support" }]}>
@@ -101,10 +130,10 @@ export default function AdminTicketsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Tous les statuts</SelectItem>
-              <SelectItem value="OUVERT">Ouvert</SelectItem>
-              <SelectItem value="EN_COURS">En cours</SelectItem>
-              <SelectItem value="RESOLU">Résolu</SelectItem>
-              <SelectItem value="FERME">Fermé</SelectItem>
+              <SelectItem value="OPEN">Ouvert</SelectItem>
+              <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+              <SelectItem value="RESOLVED">Résolu</SelectItem>
+              <SelectItem value="CLOSED">Fermé</SelectItem>
             </SelectContent>
           </Select>
 
@@ -114,10 +143,10 @@ export default function AdminTicketsPage() {
             </SelectTrigger>
             <SelectContent>
               <SelectItem value="ALL">Toutes les priorités</SelectItem>
-              <SelectItem value="FAIBLE">Faible</SelectItem>
-              <SelectItem value="MOYENNE">Moyenne</SelectItem>
-              <SelectItem value="ELEVEE">Élevée</SelectItem>
-              <SelectItem value="URGENTE">Urgente</SelectItem>
+              <SelectItem value="LOW">Faible</SelectItem>
+              <SelectItem value="MEDIUM">Moyenne</SelectItem>
+              <SelectItem value="HIGH">Élevée</SelectItem>
+              <SelectItem value="URGENT">Urgente</SelectItem>
             </SelectContent>
           </Select>
         </div>
@@ -147,66 +176,71 @@ export default function AdminTicketsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredTickets.map((t) => (
-                    <TableRow key={t.id}>
-                      <TableCell
-                        onClick={() => navigate(`/tickets/${t.id}`)}
-                        className="font-bold text-foreground hover:underline cursor-pointer"
-                      >
-                        {t.subject || `Ticket #${t.id}`}
-                      </TableCell>
-                      <TableCell className="text-muted-foreground text-xs font-medium">
-                        Client #{t.userId || "-"}
-                      </TableCell>
-                      <TableCell>
-                        <Badge
-                          variant="outline"
-                          className={
-                            t.priority === "URGENTE" || t.priority === "ELEVEE"
-                              ? "border-red-500/30 text-red-500 bg-red-500/10"
-                              : "border-blue-500/30 text-blue-500 bg-blue-500/10"
-                          }
-                        >
-                          {t.priority || "MOYENNE"}
-                        </Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="secondary">{t.status || "OUVERT"}</Badge>
-                      </TableCell>
-                      <TableCell className="text-xs text-muted-foreground">{t.createdAt || "Récemment"}</TableCell>
-                      <TableCell className="text-right space-x-1">
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          onClick={() => navigate(`/tickets/${t.id}`)}
-                          className="text-xs"
-                        >
-                          <MessageSquare className="h-4 w-4 mr-1 text-blue-500" /> Répondre
-                        </Button>
+                  {filteredTickets.map((t) => {
+                    const clientObj = usersMap[t.userId] || t.user;
+                    const clientName = clientObj?.fullName || clientObj?.userName || clientObj?.email || `Client #${t.userId || "-"}`;
 
-                        {t.status !== "FERME" && (
+                    return (
+                      <TableRow key={t.id}>
+                        <TableCell
+                          onClick={() => navigate(`/tickets/${t.id}`)}
+                          className="font-bold text-foreground hover:underline cursor-pointer"
+                        >
+                          {t.subject || `Ticket #${t.id}`}
+                        </TableCell>
+                        <TableCell className="text-foreground text-xs font-semibold">
+                          {clientName}
+                        </TableCell>
+                        <TableCell>
+                          <Badge
+                            variant="outline"
+                            className={
+                              t.priority === "URGENT" || t.priority === "HIGH"
+                                ? "border-red-500/30 text-red-500 bg-red-500/10"
+                                : "border-blue-500/30 text-blue-500 bg-blue-500/10"
+                            }
+                          >
+                            {t.priority || "MEDIUM"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          {getStatusBadge(t.status)}
+                        </TableCell>
+                        <TableCell className="text-xs text-muted-foreground">{t.createdAt || "Récemment"}</TableCell>
+                        <TableCell className="text-right space-x-1">
                           <Button
                             size="sm"
-                            variant="outline"
-                            onClick={() => handleUpdateStatus(t.id, "FERME")}
-                            className="text-xs text-red-500"
+                            variant="ghost"
+                            onClick={() => navigate(`/tickets/${t.id}`)}
+                            className="text-xs text-blue-500 hover:text-blue-600"
                           >
-                            <XCircle className="h-3.5 w-3.5 mr-1" /> Fermer
+                            <MessageSquare className="h-4 w-4 mr-1 text-blue-500" /> Répondre
                           </Button>
-                        )}
-                        {t.status !== "RESOLU" && (
-                          <Button
-                            size="sm"
-                            variant="outline"
-                            onClick={() => handleUpdateStatus(t.id, "RESOLU")}
-                            className="text-xs text-emerald-500"
-                          >
-                            <CheckCircle className="h-3.5 w-3.5 mr-1" /> Résoudre
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+
+                          {t.status !== "CLOSED" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleUpdateStatus(t.id, "CLOSED")}
+                              className="text-xs text-red-500 hover:text-red-600"
+                            >
+                              <XCircle className="h-3.5 w-3.5 mr-1" /> Fermer
+                            </Button>
+                          )}
+                          {t.status !== "RESOLVED" && (
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => handleUpdateStatus(t.id, "RESOLVED")}
+                              className="text-xs text-emerald-500 hover:text-emerald-600"
+                            >
+                              <CheckCircle className="h-3.5 w-3.5 mr-1" /> Résoudre
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })}
                 </TableBody>
               </Table>
             )}
