@@ -195,7 +195,7 @@ export default function AdminHostingPlansPage() {
                           <div className="text-xs text-muted-foreground font-normal">{plan.description}</div>
                         )}
                       </TableCell>
-                      <TableCell className="font-semibold text-blue-500">{plan.price} DH / an</TableCell>
+                      <TableCell className="font-semibold text-blue-500">{Number(plan.price || 0).toFixed(2)} DH / an</TableCell>
                       <TableCell>{plan.storage || "10 GB"}</TableCell>
                       <TableCell>{plan.bandwidth || "100 GB"}</TableCell>
                       <TableCell>{plan.emailAccounts ?? 5}</TableCell>

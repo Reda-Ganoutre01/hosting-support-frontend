@@ -90,7 +90,9 @@ export default function PlansPage() {
                 <div>
                   <h3 className="text-xl font-bold text-white">{plan.name}</h3>
                   <div className="mt-4 flex items-baseline gap-1">
-                    <span className="text-4xl font-black text-white">{plan.price || "59 DH"}</span>
+                    <span className="text-4xl font-black text-white">
+                      {typeof plan.price === 'number' ? `${plan.price.toFixed(2)} DH/an` : plan.price || "199.00 DH/an"}
+                    </span>
                   </div>
                 </div>
 
