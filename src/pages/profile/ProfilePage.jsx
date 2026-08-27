@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
+import AppLayout from "@/components/layout/AppLayout.jsx";
 import Navbar from "@/components/layout/Navbar.jsx";
 import { Footer } from "@/components/layout/Footer.jsx";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/Avatar.jsx";
@@ -11,8 +12,9 @@ import Input from "@/components/ui/Input.jsx";
 import UserService from "@/services/UserService.js";
 import TicketService from "@/services/TicketService.js";
 import HostingPlanService from "@/services/HostingPlanService.js";
-import { Edit, Mail, Settings, Star, Ticket, Check, ShieldCheck, UserCheck, LogOut, Loader2 } from "lucide-react";
+import { Edit, Mail, Settings, Star, Ticket, Check, ShieldCheck, UserCheck, LogOut, Loader2, User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import { checkIsAdmin } from "@/lib/isAdmin";
 
 import adminProfileImg from "@/assets/users/admin_profile.png";
 import userProfileImg from "@/assets/users/user_profile.png";
@@ -148,6 +150,188 @@ export default function ProfilePage() {
       .substring(0, 2);
   };
 
+  if (isAdmin) {
+    return (
+      <AppLayout breadcrumbs={[{ label: "Administration" }, { label: "Mon Profil" }]}>
+        <div className="space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div>
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
+                <User className="h-7 w-7 text-blue-500" /> Mon Profil Administrateur
+              </h1>
+              <p className="text-muted-foreground text-sm mt-1">
+                Gérez vos informations personnelles et vos accès au système d'administration.
+              </p>
+            </div>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setIsEditing(!isEditing)}
+              >
+                <Edit className="mr-2 h-4 w-4" />
+                {isEditing ? "Annuler" : "Modifier le profil"}
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => navigate("/admin/settings")}
+              >
+                <Settings className="mr-2 h-4 w-4" />
+                Paramètres
+              </Button>
+              <Button
+                variant="destructive"
+                size="sm"
+                onClick={handleLogout}
+              >
+                <LogOut className="mr-2 h-4 w-4" />
+                Déconnexion
+              </Button>
+            </div>
+          </div>
+
+          {loading ? (
+            <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-3">
+              <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
+              <p className="text-sm font-medium">Chargement du profil administrateur...</p>
+            </div>
+          ) : (
+            <div className="grid gap-6 md:grid-cols-4">
+              {/* Sidebar card */}
+              <div className="md:col-span-1">
+                <Card className="bg-card border-border shadow-sm">
+                  <CardContent className="p-6">
+                    <div className="flex flex-col items-center">
+                      <Avatar className="h-24 w-24 ring-4 ring-blue-500/20 shadow-md p-1 bg-background">
+                        <AvatarImage src={avatarSrc} alt={formData.fullName} className="object-contain" />
+                        <AvatarFallback className="bg-blue-600 text-white font-bold text-xl">
+                          {getInitials(formData.fullName)}
+                        </AvatarFallback>
+                      </Avatar>
+                      
+                      <h2 className="mt-4 text-lg font-bold text-foreground text-center">{formData.fullName}</h2>
+                      <p className="text-muted-foreground text-sm text-center">{formData.email}</p>
+                      
+                      <Badge className="mt-2 bg-blue-500/10 text-blue-500 border-blue-500/20 font-semibold px-3 py-1">
+                        Administrateur Système
+                      </Badge>
+                    </div>
+
+                    <div className="mt-6 space-y-4 pt-4 border-t border-border">
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Membre depuis</span>
+                        <span className="font-medium text-foreground">2026</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Statut</span>
+                        <span className="font-medium text-emerald-500">En ligne</span>
+                      </div>
+                      <div className="flex justify-between text-sm">
+                        <span className="text-muted-foreground">Rôle</span>
+                        <span className="font-medium text-foreground uppercase">{formData.role}</span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              {/* Main Content */}
+              <div className="space-y-6 md:col-span-3">
+                <Card className="bg-card border-border shadow-sm">
+                  <CardContent className="p-6">
+                    <h3 className="mb-4 text-lg font-bold text-foreground">Informations Personnelles</h3>
+
+                    {isEditing ? (
+                      <form onSubmit={handleSave} className="space-y-4">
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-1 block">Nom Complet</label>
+                            <Input
+                              type="text"
+                              value={formData.fullName}
+                              onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
+                              required
+                              className="bg-background border-border"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-1 block">Adresse Email</label>
+                            <Input
+                              type="email"
+                              value={formData.email}
+                              onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                              required
+                              className="bg-background border-border"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid gap-4 sm:grid-cols-2">
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-1 block">Téléphone</label>
+                            <Input
+                              type="text"
+                              value={formData.phone}
+                              onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                              className="bg-background border-border"
+                            />
+                          </div>
+                          <div>
+                            <label className="text-sm font-medium text-foreground mb-1 block">Rôle de compte</label>
+                            <Input
+                              type="text"
+                              value={formData.role}
+                              disabled
+                              className="bg-muted text-muted-foreground cursor-not-allowed uppercase"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="flex justify-end gap-2 pt-4">
+                          <Button
+                            type="button"
+                            variant="outline"
+                            onClick={() => setIsEditing(false)}
+                          >
+                            Annuler
+                          </Button>
+                          <Button type="submit" disabled={saving} className="bg-blue-600 hover:bg-blue-700 text-white font-semibold">
+                            {saving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Check className="mr-2 h-4 w-4" />}
+                            Enregistrer
+                          </Button>
+                        </div>
+                      </form>
+                    ) : (
+                      <div className="grid gap-4 sm:grid-cols-2">
+                        <div className="bg-background p-4 rounded-xl border border-border">
+                          <p className="text-xs text-muted-foreground uppercase font-semibold">Nom Complet</p>
+                          <p className="text-sm font-bold text-foreground mt-1">{formData.fullName}</p>
+                        </div>
+                        <div className="bg-background p-4 rounded-xl border border-border">
+                          <p className="text-xs text-muted-foreground uppercase font-semibold">Email</p>
+                          <p className="text-sm font-bold text-foreground mt-1">{formData.email}</p>
+                        </div>
+                        <div className="bg-background p-4 rounded-xl border border-border">
+                          <p className="text-xs text-muted-foreground uppercase font-semibold">Téléphone</p>
+                          <p className="text-sm font-bold text-foreground mt-1">{formData.phone}</p>
+                        </div>
+                        <div className="bg-background p-4 rounded-xl border border-border">
+                          <p className="text-xs text-muted-foreground uppercase font-semibold">Rôle Système</p>
+                          <p className="text-sm font-bold text-emerald-500 uppercase mt-1">{formData.role}</p>
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+        </div>
+      </AppLayout>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-50 text-slate-900 flex flex-col justify-between">
       <div>
@@ -197,13 +381,8 @@ export default function ProfilePage() {
                 <Card className="p-0 border-slate-200 bg-white shadow-sm">
                   <CardContent className="p-6">
                     <div className="flex flex-col items-center">
-                      <Avatar className="h-24 w-24 ring-4 ring-blue-50 shadow-md p-1 bg-white">
-                        <AvatarImage
-                          src={avatarSrc}
-                          alt={formData.fullName}
-                          className="object-contain"
-                        />
-                        <AvatarFallback className="bg-blue-600 text-white font-bold text-xl">
+                      <Avatar className="h-24 w-24 ring-4 ring-blue-500/20 shadow-md bg-slate-900 border border-slate-700">
+                        <AvatarFallback className="bg-slate-900 text-white font-extrabold text-2xl tracking-wider">
                           {getInitials(formData.fullName)}
                         </AvatarFallback>
                       </Avatar>
@@ -212,7 +391,7 @@ export default function ProfilePage() {
                       <p className="text-slate-500 text-sm text-center">{formData.email}</p>
                       
                       <Badge className="mt-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border-0 font-semibold px-3 py-1">
-                        {isAdmin ? "Administrateur" : "Membre VIP"}
+                        Membre VIP
                       </Badge>
 
                       <Button onClick={() => navigate("/tickets")} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
