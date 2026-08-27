@@ -64,10 +64,11 @@ export default function TicketDetailPage() {
 
     setSending(true);
     try {
+      const senderRole = user?.role === "ADMIN" ? "ADMIN" : "USER";
       await MessageService.sendMessage({
         ticketId: Number(id),
         content: newMessage,
-        sender: "USER",
+        sender: senderRole,
         userId: user?.id || ticket?.user?.id || 1
       });
       setNewMessage("");
