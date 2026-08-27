@@ -72,6 +72,9 @@ export default function Navbar({ isScrolled }) {
             <Link to="/" className={getNavLinkClass("/")}>Accueil</Link>
             <Link to="/domain" className={getNavLinkClass("/domain")}>Domaines</Link>
             <Link to="/plans" className={getNavLinkClass("/plans")}>Hébergement Web</Link>
+            {user && (
+              <Link to="/tickets" className={getNavLinkClass("/tickets")}>Tickets</Link>
+            )}
             
             <NavigationMenu>
               <NavigationMenuList>
