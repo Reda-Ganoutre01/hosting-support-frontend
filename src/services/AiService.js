@@ -7,11 +7,8 @@ class AiService {
 
   async generateAiSuggestion(ticketId, prompt) {
     return api.post("/aiResponses", {
-      ticketId,
-      prompt: prompt || "Générer une réponse de support d'assistance technique pour ce ticket",
-      response: "Bonjour, nous avons analysé votre demande d'hébergement. Voici les démarches pour vérifier la configuration DNS et le serveur web.",
-      provider: "OpenAI GPT-4",
-      confidenceScore: 0.96
+      ticketId: (ticketId && ticketId > 0) ? ticketId : null,
+      prompt: prompt || "Question support technique"
     });
   }
 
