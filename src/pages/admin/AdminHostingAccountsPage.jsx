@@ -53,11 +53,36 @@ export default function AdminHostingAccountsPage() {
     status: "ACTIVE",
   });
 
+  const [usersMap, setUsersMap] = useState({});
+  const [plansMap, setPlansMap] = useState({});
+
   const loadAccounts = async () => {
     setLoading(true);
     try {
-      const res = await HostingPlanService.getHostingAccounts();
-      setAccounts(Array.isArray(res.data) ? res.data : []);
+      const [accountsRes, plansRes, usersRes] = await Promise.all([
+        HostingPlanService.getHostingAccounts(),
+        HostingPlanService.getHostingPlans().catch(() => ({ data: [] })),
+        AdminService.getUsers().catch(() => ({ data: [] }))
+      ]);
+      
+      const accList = Array.isArray(accountsRes.data) ? accountsRes.data : [];
+      setAccounts(accList);
+
+      const pList = Array.isArray(plansRes.data) ? plansRes.data : [];
+      setPlans(pList);
+      const pMap = {};
+      pList.forEach((p) => { pMap[p.id] = p; });
+      setPlansMap(pMap);
+
+      const uList = Array.isArray(usersRes.data)
+        ? usersRes.data
+        : usersRes.data?.content && Array.isArray(usersRes.data.content)
+        ? usersRes.data.content
+        : [];
+      setUsers(uList);
+      const uMap = {};
+      uList.forEach((u) => { uMap[u.id] = u; });
+      setUsersMap(uMap);
     } catch (err) {
       console.error(err);
       toast.error("Impossible de charger la liste des comptes d'hébergement.");
@@ -74,7 +99,7 @@ export default function AdminHostingAccountsPage() {
     try {
       const [plansRes, usersRes] = await Promise.all([
         HostingPlanService.getHostingPlans(),
-        AdminService.getUsersPaginated(0, 100),
+        AdminService.getUsers(),
       ]);
       setPlans(Array.isArray(plansRes.data) ? plansRes.data : []);
       const userList = Array.isArray(usersRes.data)
@@ -203,8 +228,8 @@ export default function AdminHostingAccountsPage() {
                 <TableHeader>
                   <TableRow>
                     <TableHead>Nom de domaine</TableHead>
-                    <TableHead>Client ID</TableHead>
-                    <TableHead>Formule ID</TableHead>
+                    <TableHead>Client (Utilisateur)</TableHead>
+                    <TableHead>Formule d'Hébergement</TableHead>
                     <TableHead>Statut</TableHead>
                     <TableHead>Date début</TableHead>
                     <TableHead>Expiration</TableHead>
@@ -212,14 +237,18 @@ export default function AdminHostingAccountsPage() {
                   </TableRow>
                 </TableHeader>
                 <TableBody>
-                  {filteredAccounts.map((acc) => (
-                    <TableRow key={acc.id}>
-                      <TableCell className="font-bold text-foreground flex items-center gap-2">
-                        <Globe className="h-4 w-4 text-blue-500" />
-                        {acc.domainName || `Domaine #${acc.id}`}
-                      </TableCell>
-                      <TableCell>Client #{acc.userId || "-"}</TableCell>
-                      <TableCell>Formule #{acc.hostingPlanId || "-"}</TableCell>
+                  {filteredAccounts.map((acc) => {
+                    const clientName = acc.userName || (usersMap[acc.userId] ? usersMap[acc.userId].name || usersMap[acc.userId].email : null) || acc.userEmail || `Client #${acc.userId || "-"}`;
+                    const planName = acc.hostingPlanName || (plansMap[acc.hostingPlanId] ? plansMap[acc.hostingPlanId].name : null) || `Formule #${acc.hostingPlanId || "-"}`;
+                    
+                    return (
+                      <TableRow key={acc.id}>
+                        <TableCell className="font-bold text-foreground flex items-center gap-2">
+                          <Globe className="h-4 w-4 text-blue-500" />
+                          {acc.domainName || `Domaine #${acc.id}`}
+                        </TableCell>
+                        <TableCell className="font-medium text-foreground">{clientName}</TableCell>
+                        <TableCell className="font-medium text-blue-600 dark:text-blue-400">{planName}</TableCell>
                       <TableCell>
                         <Badge
                           variant="outline"
@@ -269,7 +298,8 @@ export default function AdminHostingAccountsPage() {
                         )}
                       </TableCell>
                     </TableRow>
-                  ))}
+                  );
+                })}
                 </TableBody>
               </Table>
             )}
