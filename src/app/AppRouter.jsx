@@ -23,6 +23,10 @@ import DomainPage from "../pages/domain/DomainPage.jsx";
 import ProfilePage from "../pages/profile/ProfilePage.jsx";
 import ContactPage from "../pages/contact/ContactPage.jsx";
 import UsersManagementPage from "../pages/admin/UsersManagementPage.jsx";
+import AdminHostingPlansPage from "../pages/admin/AdminHostingPlansPage.jsx";
+import AdminHostingAccountsPage from "../pages/admin/AdminHostingAccountsPage.jsx";
+import AdminTicketsPage from "../pages/admin/AdminTicketsPage.jsx";
+import AdminFaqPage from "../pages/admin/AdminFaqPage.jsx";
 
 import AiAssistantPage from "../pages/client/AiAssistantPage.jsx";
 import ClientSettingsPage from "../pages/client/ClientSettingsPage.jsx";
@@ -65,10 +69,10 @@ export function AppRouter() {
               {/* Protected Admin Routes */}
               <Route path="/admin/dashboard" element={<ProtectedRoute requireAdmin><AdminDashboardPage /></ProtectedRoute>} />
               <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
-              <Route path="/admin/hosting-plans" element={<ProtectedRoute requireAdmin><PlansPage /></ProtectedRoute>} />
-              <Route path="/admin/hosting-accounts" element={<ProtectedRoute requireAdmin><HostingAccountsPage /></ProtectedRoute>} />
-              <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><TicketsPage /></ProtectedRoute>} />
-              <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><FaqPage /></ProtectedRoute>} />
+              <Route path="/admin/hosting-plans" element={<ProtectedRoute requireAdmin><AdminHostingPlansPage /></ProtectedRoute>} />
+              <Route path="/admin/hosting-accounts" element={<ProtectedRoute requireAdmin><AdminHostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><AdminTicketsPage /></ProtectedRoute>} />
+              <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><AdminFaqPage /></ProtectedRoute>} />
               <Route path="/admin/workflow-logs" element={<ProtectedRoute requireAdmin><WorkflowLogsPage /></ProtectedRoute>} />
               <Route path="/admin/notifications" element={<ProtectedRoute requireAdmin><NotificationsPage /></ProtectedRoute>} />
               <Route path="/admin/profile" element={<ProtectedRoute requireAdmin><ProfilePage /></ProtectedRoute>} />
