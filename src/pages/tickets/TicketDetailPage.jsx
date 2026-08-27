@@ -4,6 +4,7 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import TicketService from "@/services/TicketService.js";
 import MessageService from "@/services/MessageService.js";
 import AiService from "@/services/AiService.js";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
 import {
   Send,
@@ -19,6 +20,7 @@ import Button from "@/components/ui/button";
 
 export default function TicketDetailPage() {
   const { id } = useParams();
+  const { user } = useAuth();
   const toast = useToast();
   const messagesEndRef = useRef(null);
 
@@ -65,7 +67,8 @@ export default function TicketDetailPage() {
       await MessageService.sendMessage({
         ticketId: Number(id),
         content: newMessage,
-        sender: "CLIENT"
+        sender: "USER",
+        userId: user?.id || ticket?.user?.id || 1
       });
       setNewMessage("");
       loadTicketAndMessages();
