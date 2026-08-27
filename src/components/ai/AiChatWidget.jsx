@@ -2,14 +2,8 @@ import React, { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { MessageSquare, X, Send, Bot, User, ArrowRight, Loader2, Home, Sparkles, RefreshCw, AlertCircle, ChevronDown } from "lucide-react";
 import AiService from "@/services/AiService.js";
+import api from "@/lib/axios";
 import { useAuth } from "@/context/AuthContext.jsx";
-
-const SUGGESTIONS = [
-  "Comment connecter mon domaine ?",
-  "Comment installer WordPress ?",
-  "Accéder à mon cPanel",
-  "Mon site est hors ligne"
-];
 
 export default function AiChatWidget() {
   const { user } = useAuth();
@@ -20,6 +14,7 @@ export default function AiChatWidget() {
   const [activeTab, setActiveTab] = useState("home"); // "home" or "chat"
   const [inputPrompt, setInputPrompt] = useState("");
   const [loading, setLoading] = useState(false);
+  const [faqs, setFaqs] = useState([]);
 
   const [messages, setMessages] = useState([
     {
@@ -30,6 +25,21 @@ export default function AiChatWidget() {
     },
   ]);
 
+  // Fetch FAQ questions & answers from Spring Boot backend MySQL DB
+  useEffect(() => {
+    const fetchFaqs = async () => {
+      try {
+        const res = await api.get("/faqs");
+        if (Array.isArray(res.data) && res.data.length > 0) {
+          setFaqs(res.data);
+        }
+      } catch (err) {
+        console.warn("Could not load backend FAQs, using defaults:", err);
+      }
+    };
+    fetchFaqs();
+  }, []);
+
   const scrollToBottom = () => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   };
@@ -39,6 +49,36 @@ export default function AiChatWidget() {
       scrollToBottom();
     }
   }, [messages, loading, isOpen, activeTab]);
+
+  const findMatchingAnswerFromBackend = (query) => {
+    if (!faqs || faqs.length === 0) return null;
+    const lowerQuery = query.toLowerCase().trim();
+
+    // 1. Direct question match
+    const directMatch = faqs.find(
+      (f) => f.question && (f.question.toLowerCase().includes(lowerQuery) || lowerQuery.includes(f.question.toLowerCase()))
+    );
+    if (directMatch) return directMatch.answer;
+
+    // 2. Keyword match
+    const words = lowerQuery.split(/\s+/).filter((w) => w.length > 2);
+    let bestFaq = null;
+    let maxHits = 0;
+
+    for (const faq of faqs) {
+      const targetText = `${faq.question || ""} ${faq.answer || ""} ${faq.category || ""}`.toLowerCase();
+      let hits = 0;
+      for (const w of words) {
+        if (targetText.includes(w)) hits++;
+      }
+      if (hits > maxHits) {
+        maxHits = hits;
+        bestFaq = faq;
+      }
+    }
+
+    return maxHits > 0 ? bestFaq.answer : null;
+  };
 
   const handleSendMessage = async (textToSend) => {
     const query = (textToSend || inputPrompt).trim();
@@ -58,32 +98,44 @@ export default function AiChatWidget() {
     setLoading(true);
 
     try {
+      // 1. First check if backend API returns an AIResponse
       const res = await AiService.generateAiSuggestion(0, query);
       const aiData = res.data;
 
+      let answerText = aiData?.response;
+
+      // 2. Cross-check with fetched backend MySQL FAQ answers if available
+      const backendAnswer = findMatchingAnswerFromBackend(query);
+      if (backendAnswer) {
+        answerText = backendAnswer;
+      }
+
       const confidence = aiData?.confidenceScore ?? 0.95;
-      const isLowConfidence = confidence < 0.6;
+      const isLowConfidence = confidence < 0.6 && !backendAnswer;
 
       const aiMessage = {
         id: Date.now() + 1,
         sender: "ai",
         text: isLowConfidence
-          ? "Nous ne sommes pas suffisamment certains de la réponse à votre question. Votre demande peut être transmise directement à notre équipe de support."
-          : aiData?.response || "Voici les consignes recommandées pour votre demande technique.",
+          ? "Nous ne sommes pas suffisamment certains de la réponse. Vous pouvez transmettre votre demande au support technique."
+          : answerText || "Voici les démarches recommandées pour votre demande technique.",
         isFallback: isLowConfidence,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
       };
 
       setMessages((prev) => [...prev, aiMessage]);
     } catch (err) {
-      console.error(err);
+      console.warn("Backend AI endpoint notice, fetching from loaded FAQ database:", err);
+      
+      const backendAnswer = findMatchingAnswerFromBackend(query);
+      const fallbackText = backendAnswer || "Merci pour votre question ! Je peux vous aider sur la gestion de vos hébergements, noms de domaine, configurations DNS, cPanel et WordPress. Vous pouvez également ouvrir un ticket support.";
+
       setMessages((prev) => [
         ...prev,
         {
           id: Date.now() + 1,
           sender: "ai",
-          text: "Une erreur est survenue lors de la communication avec l'IA. Vous pouvez ouvrir un ticket de support.",
-          isFallback: true,
+          text: fallbackText,
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         },
       ]);
@@ -103,6 +155,17 @@ export default function AiChatWidget() {
     ]);
     setActiveTab("chat");
   };
+
+  // Questions suggestions loaded from MySQL backend FAQ table or default fallbacks
+  const displaySuggestions = faqs.length > 0
+    ? faqs.slice(0, 5).map((f) => f.question)
+    : [
+        "Comment changer d'offre d'hébergement ?",
+        "Comment réinitialiser mon mot de passe ?",
+        "Puis-je migrer mon nom de domaine ?",
+        "Que comprend le certificat SSL inclus ?",
+        "Comment créer un compte e-mail ?"
+      ];
 
   return (
     <div className="fixed bottom-5 right-5 z-50 flex flex-col items-end">
@@ -151,18 +214,18 @@ export default function AiChatWidget() {
             {activeTab === "home" ? (
               <div className="p-4 space-y-4 overflow-y-auto flex-1">
                 <div className="text-xs font-semibold text-muted-foreground flex items-center gap-1.5">
-                  <Sparkles className="h-3.5 w-3.5 text-emerald-600" /> Suggestions rapides :
+                  <Sparkles className="h-3.5 w-3.5 text-emerald-600" /> Questions fréquemment posées (BDD) :
                 </div>
 
                 <div className="space-y-2">
-                  {SUGGESTIONS.map((q, idx) => (
+                  {displaySuggestions.map((q, idx) => (
                     <button
                       key={idx}
                       onClick={() => handleSendMessage(q)}
                       className="w-full text-left p-3 rounded-xl bg-card border border-border hover:border-emerald-500 text-xs text-foreground font-medium flex items-center justify-between group transition-all"
                     >
-                      <span>{q}</span>
-                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-emerald-600 transition-colors" />
+                      <span className="line-clamp-2">{q}</span>
+                      <ArrowRight className="h-3.5 w-3.5 text-muted-foreground group-hover:text-emerald-600 shrink-0 transition-colors" />
                     </button>
                   ))}
                 </div>
