@@ -19,6 +19,7 @@ import FaqPage from "../pages/faq/FaqPage.jsx";
 import DomainPage from "../pages/domain/DomainPage.jsx";
 import ProfilePage from "../pages/profile/ProfilePage.jsx";
 import ContactPage from "../pages/contact/ContactPage.jsx";
+import UsersManagementPage from "../pages/admin/UsersManagementPage.jsx";
 
 export function AppRouter() {
   return (
@@ -46,14 +47,14 @@ export function AppRouter() {
               <Route path="/hosting-accounts" element={<ProtectedRoute requireAdmin><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/domains" element={<ProtectedRoute requireAdmin><DomainPage /></ProtectedRoute>} />
               <Route path="/servers" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
-              <Route path="/users" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
+              <Route path="/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
               <Route path="/faq" element={<ProtectedRoute><FaqPage /></ProtectedRoute>} />
 
               {/* Protected Admin Only Routes */}
               <Route path="/dashboard" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
               <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><TicketsPage /></ProtectedRoute>} />
-              <Route path="/admin/users" element={<ProtectedRoute requireAdmin><DashboardPage /></ProtectedRoute>} />
+              <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
             </Routes>
           </Router>
         </Suspense>
