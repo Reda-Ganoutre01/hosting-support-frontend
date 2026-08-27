@@ -1,18 +1,18 @@
 import * as React from "react";
 import { Link } from "react-router-dom";
 import {
-  IconChartBar,
   IconDashboard,
   IconDatabase,
-  IconWorld,
   IconHeadset,
   IconCpu,
-  IconReceiptTax,
   IconUsers,
   IconSettings,
   IconHelp,
-  IconShieldCheck,
-  IconServer
+  IconServer,
+  IconBell,
+  IconUser,
+  IconRobot,
+  IconFileText
 } from "@tabler/icons-react";
 
 import {
@@ -23,88 +23,48 @@ import {
   SidebarMenuButton,
   SidebarMenuItem
 } from "@/components/ui/sidebar";
-import { NavDocuments } from "./nav-documents";
 import { NavMain } from "./nav-main";
 import { NavSecondary } from "./nav-secondary";
 import logoImg from "@/assets/img/Hebergeur-web-Maroc copy.png";
-
-const data = {
-  navMain: [
-    {
-      title: "Dashboard",
-      url: "/dashboard",
-      icon: IconDashboard
-    },
-    {
-      title: "Hosting Accounts",
-      url: "/hosting-accounts",
-      icon: IconDatabase
-    },
-    {
-      title: "Domain Names",
-      url: "/domains",
-      icon: IconWorld
-    },
-    {
-      title: "Support Tickets",
-      url: "/tickets",
-      icon: IconHeadset
-    },
-    {
-      title: "Cloud Servers",
-      url: "/servers",
-      icon: IconCpu
-    },
-    {
-      title: "Clients & Users",
-      url: "/users",
-      icon: IconUsers
-    }
-  ],
-  navSecondary: [
-    {
-      title: "Settings",
-      url: "#",
-      icon: IconSettings
-    },
-    {
-      title: "System Status",
-      url: "#",
-      icon: IconShieldCheck
-    },
-    {
-      title: "Get Help",
-      url: "#",
-      icon: IconHelp
-    }
-  ],
-  documents: [
-    {
-      name: "Billing & Invoices",
-      url: "#",
-      icon: IconReceiptTax
-    },
-    {
-      name: "Bandwidth Logs",
-      url: "#",
-      icon: IconChartBar
-    },
-    {
-      name: "Backup Vaults",
-      url: "#",
-      icon: IconServer
-    }
-  ]
-};
+import { AuthContext } from "@/context/AuthContext";
+import { checkIsAdmin } from "@/lib/isAdmin";
 
 export function AppSidebar({ ...props }) {
+  const { user } = React.useContext(AuthContext);
+  const isAdmin = checkIsAdmin(user);
+
+  const adminNav = [
+    { title: "Tableau de bord", url: "/admin/dashboard", icon: IconDashboard },
+    { title: "Utilisateurs", url: "/admin/users", icon: IconUsers },
+    { title: "Formules d'hébergement", url: "/admin/hosting-plans", icon: IconServer },
+    { title: "Comptes d'hébergement", url: "/admin/hosting-accounts", icon: IconDatabase },
+    { title: "Tickets de support", url: "/admin/tickets", icon: IconHeadset },
+    { title: "FAQ", url: "/admin/faq", icon: IconHelp },
+    { title: "Journaux des workflows", url: "/admin/workflow-logs", icon: IconCpu },
+    { title: "Notifications", url: "/admin/notifications", icon: IconBell }
+  ];
+
+  const clientNav = [
+    { title: "Tableau de bord", url: "/client/dashboard", icon: IconDashboard },
+    { title: "Mes hébergements", url: "/client/accounts", icon: IconDatabase },
+    { title: "Mes tickets", url: "/client/tickets", icon: IconHeadset },
+    { title: "Assistant IA", url: "/client/ai-assistant", icon: IconRobot },
+    { title: "Notifications", url: "/client/notifications", icon: IconBell }
+  ];
+
+  const secondaryNav = [
+    { title: "Profil", url: isAdmin ? "/admin/profile" : "/client/profile", icon: IconUser },
+    { title: "Paramètres", url: isAdmin ? "/admin/settings" : "/client/settings", icon: IconSettings },
+    { title: "Aide & FAQ", url: isAdmin ? "/admin/faq" : "/faq", icon: IconHelp }
+  ];
+
   return (
     <Sidebar collapsible="icon" className="h-auto border-r border-border bg-sidebar" {...props}>
       <SidebarHeader className="border-b border-sidebar-border">
         <SidebarMenu>
           <SidebarMenuItem>
             <SidebarMenuButton asChild className="data-[slot=sidebar-menu-button]:!p-1.5">
-              <Link to="/dashboard" className="flex items-center">
+              <Link to={isAdmin ? "/admin/dashboard" : "/client/dashboard"} className="flex items-center">
                 <img src={logoImg} alt="ValaHosting Logo" className="h-8 w-auto object-contain shrink-0" />
               </Link>
             </SidebarMenuButton>
@@ -112,10 +72,10 @@ export function AppSidebar({ ...props }) {
         </SidebarMenu>
       </SidebarHeader>
       <SidebarContent>
-        <NavMain items={data.navMain} />
-        <NavDocuments items={data.documents} />
-        <NavSecondary items={data.navSecondary} className="mt-auto" />
+        <NavMain items={isAdmin ? adminNav : clientNav} />
+        <NavSecondary items={secondaryNav} className="mt-auto" />
       </SidebarContent>
     </Sidebar>
   );
 }
+
