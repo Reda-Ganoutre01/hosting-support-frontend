@@ -14,6 +14,7 @@ import AdminDashboardPage from "../pages/admin/AdminDashboardPage.jsx";
 import ClientDashboardPage from "../pages/client/ClientDashboardPage.jsx";
 import TicketsPage from "../pages/tickets/TicketsPage.jsx";
 import TicketDetailPage from "../pages/tickets/TicketDetailPage.jsx";
+import CreateTicketPage from "../pages/tickets/CreateTicketPage.jsx";
 import PlansPage from "../pages/plans/PlansPage.jsx";
 import HostingAccountsPage from "../pages/accounts/HostingAccountsPage.jsx";
 import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
@@ -54,6 +55,7 @@ export function AppRouter() {
               <Route path="/client/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/client/hosting" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/client/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
+              <Route path="/client/tickets/new" element={<ProtectedRoute><CreateTicketPage /></ProtectedRoute>} />
               <Route path="/client/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
               <Route path="/client/ai-assistant" element={<ProtectedRoute><AiAssistantPage /></ProtectedRoute>} />
               <Route path="/client/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
