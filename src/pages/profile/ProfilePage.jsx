@@ -390,10 +390,6 @@ export default function ProfilePage() {
                       <h2 className="mt-4 text-lg font-bold text-slate-900 text-center">{formData.fullName}</h2>
                       <p className="text-slate-500 text-sm text-center">{formData.email}</p>
                       
-                      <Badge className="mt-2 bg-blue-100 text-blue-700 hover:bg-blue-200 border-0 font-semibold px-3 py-1">
-                        Membre VIP
-                      </Badge>
-
                       <Button onClick={() => navigate("/tickets")} className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white" size="sm">
                         <Mail className="mr-2 h-4 w-4" />
                         Support Client
@@ -408,10 +404,6 @@ export default function ProfilePage() {
                       <div className="flex justify-between text-sm">
                         <span className="text-slate-500">Dernière activité</span>
                         <span className="font-medium text-emerald-600">En ligne</span>
-                      </div>
-                      <div className="flex justify-between text-sm">
-                        <span className="text-slate-500">Rôle</span>
-                        <span className="font-medium text-slate-800 uppercase">{formData.role}</span>
                       </div>
                     </div>
                   </CardContent>
@@ -501,15 +493,6 @@ export default function ProfilePage() {
                               type="text"
                               value={formData.phone}
                               onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                            />
-                          </div>
-                          <div>
-                            <label className="text-sm font-medium text-slate-700 mb-1 block">Rôle de compte</label>
-                            <Input
-                              type="text"
-                              value={formData.role}
-                              disabled
-                              className="bg-slate-100 text-slate-500 cursor-not-allowed uppercase"
                             />
                           </div>
                         </div>
