@@ -27,12 +27,23 @@ import AdminHostingPlansPage from "../pages/admin/AdminHostingPlansPage.jsx";
 import AdminHostingAccountsPage from "../pages/admin/AdminHostingAccountsPage.jsx";
 import AdminTicketsPage from "../pages/admin/AdminTicketsPage.jsx";
 import AdminFaqPage from "../pages/admin/AdminFaqPage.jsx";
+import AdminProfilePage from "../pages/admin/AdminProfilePage.jsx";
 
 import AiAssistantPage from "../pages/client/AiAssistantPage.jsx";
 import ClientSettingsPage from "../pages/client/ClientSettingsPage.jsx";
 import WorkflowLogsPage from "../pages/admin/WorkflowLogsPage.jsx";
 import AdminSettingsPage from "../pages/admin/AdminSettingsPage.jsx";
 import NotFoundPage from "../pages/NotFoundPage.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
+import { checkIsAdmin } from "@/lib/isAdmin.js";
+
+function ProfileRedirect() {
+  const { user } = useAuth();
+  if (checkIsAdmin(user)) {
+    return <Navigate to="/admin/profile" replace />;
+  }
+  return <Navigate to="/client/profile" replace />;
+}
 
 export function AppRouter() {
   return (
@@ -75,11 +86,11 @@ export function AppRouter() {
               <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><AdminFaqPage /></ProtectedRoute>} />
               <Route path="/admin/workflow-logs" element={<ProtectedRoute requireAdmin><WorkflowLogsPage /></ProtectedRoute>} />
               <Route path="/admin/notifications" element={<ProtectedRoute requireAdmin><NotificationsPage /></ProtectedRoute>} />
-              <Route path="/admin/profile" element={<ProtectedRoute requireAdmin><ProfilePage /></ProtectedRoute>} />
+              <Route path="/admin/profile" element={<ProtectedRoute requireAdmin><AdminProfilePage /></ProtectedRoute>} />
               <Route path="/admin/settings" element={<ProtectedRoute requireAdmin><AdminSettingsPage /></ProtectedRoute>} />
 
               {/* Shortcuts / Backward Compatibility */}
-              <Route path="/profile" element={<ProtectedRoute><ProfilePage /></ProtectedRoute>} />
+              <Route path="/profile" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
               <Route path="/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
               <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
