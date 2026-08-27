@@ -24,16 +24,18 @@ import {
   SidebarMenuItem,
   useSidebar
 } from "@/components/ui/sidebar";
+import { checkIsAdmin } from "@/lib/isAdmin";
 import { AuthContext } from "@/context/AuthContext.jsx";
 
 export function HeaderUserMenu() {
   const navigate = useNavigate();
   const { user, logout } = React.useContext(AuthContext);
+  const isAdmin = checkIsAdmin(user);
 
   const displayUser = {
-    name: user?.name || user?.username || "Admin User",
-    email: user?.email || "admin@valahosting.com",
-    avatar: user?.avatar || "/avatars/shadcn.jpg"
+    name: user?.fullName || user?.name || user?.username || "Reda",
+    email: user?.email || "reda@example.com",
+    avatar: user?.avatar || null
   };
 
   const handleLogout = () => {
@@ -68,23 +70,23 @@ export function HeaderUserMenu() {
         </DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuGroup>
-          <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+          <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/profile" : "/client/profile")} className="cursor-pointer">
             <IconUserCircle className="h-4 w-4 mr-2" />
-            Profile & Account
+            Profil & Compte
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/notifications")} className="cursor-pointer">
+          <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/notifications" : "/client/notifications")} className="cursor-pointer">
             <IconNotification className="h-4 w-4 mr-2" />
             Notifications
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => navigate("/tickets")} className="cursor-pointer">
+          <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/tickets" : "/client/tickets")} className="cursor-pointer">
             <IconCreditCard className="h-4 w-4 mr-2" />
-            Support Tickets
+            Tickets de Support
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
         <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-500/10">
           <IconLogout className="h-4 w-4 mr-2" />
-          Déconnexion (Log out)
+          Déconnexion
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>
@@ -95,11 +97,12 @@ export function NavUser() {
   const { isMobile } = useSidebar();
   const navigate = useNavigate();
   const { user, logout } = React.useContext(AuthContext);
+  const isAdmin = checkIsAdmin(user);
 
   const displayUser = {
-    name: user?.name || user?.username || "Admin User",
-    email: user?.email || "admin@valahosting.com",
-    avatar: user?.avatar || "/avatars/shadcn.jpg"
+    name: user?.fullName || user?.name || user?.username || "Reda",
+    email: user?.email || "reda@example.com",
+    avatar: user?.avatar || null
   };
 
   const handleLogout = () => {
@@ -139,23 +142,23 @@ export function NavUser() {
             </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuGroup>
-              <DropdownMenuItem onClick={() => navigate("/profile")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/profile" : "/client/profile")} className="cursor-pointer">
                 <IconUserCircle className="h-4 w-4 mr-2" />
-                Profile & Account
+                Profil & Compte
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/notifications")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/notifications" : "/client/notifications")} className="cursor-pointer">
                 <IconNotification className="h-4 w-4 mr-2" />
                 Notifications
               </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate("/tickets")} className="cursor-pointer">
+              <DropdownMenuItem onClick={() => navigate(isAdmin ? "/admin/tickets" : "/client/tickets")} className="cursor-pointer">
                 <IconCreditCard className="h-4 w-4 mr-2" />
-                Support Tickets
+                Tickets de Support
               </DropdownMenuItem>
             </DropdownMenuGroup>
             <DropdownMenuSeparator />
             <DropdownMenuItem onClick={handleLogout} className="cursor-pointer text-red-500 focus:text-red-600 focus:bg-red-500/10">
               <IconLogout className="h-4 w-4 mr-2" />
-              Déconnexion (Log out)
+              Déconnexion
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
