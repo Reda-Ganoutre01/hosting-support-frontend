@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { Check, Loader2, X, Globe, Zap, Server, ShieldCheck, HardDrive, Cpu } from "lucide-react";
 import Button from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge.jsx";
@@ -18,6 +19,7 @@ import {
 export default function PlansPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
 
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -55,6 +57,7 @@ export default function PlansPage() {
       await HostingPlanService.createHostingAccount({
         domainName: domainName.endsWith(".ma") || domainName.endsWith(".com") ? domainName : `${domainName}.com`,
         hostingPlanId: selectedPlan?.id || 1,
+        userId: user?.id ? Number(user.id) : null,
         status: "ACTIVE",
         startDate: new Date().toISOString().split("T")[0],
         expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0]
