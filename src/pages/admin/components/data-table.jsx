@@ -315,22 +315,21 @@ export function DataTable({ data: initialData }) {
           </SelectContent>
         </Select>
         <TabsList className="hidden md:flex items-center gap-1">
-          <TabsTrigger value="outline">All Instances</TabsTrigger>
+          <TabsTrigger value="outline">Toutes les instances</TabsTrigger>
           <TabsTrigger value="past-performance" className="flex items-center gap-1.5">
-            Active Servers <Badge variant="secondary" className="px-1.5 py-0 text-xs">8</Badge>
+            Serveurs actifs <Badge variant="secondary" className="px-1.5 py-0 text-xs">8</Badge>
           </TabsTrigger>
           <TabsTrigger value="key-personnel" className="flex items-center gap-1.5">
             Maintenance <Badge variant="secondary" className="px-1.5 py-0 text-xs">2</Badge>
           </TabsTrigger>
-          <TabsTrigger value="focus-documents">Pending Billing</TabsTrigger>
+          <TabsTrigger value="focus-documents">Facturation en attente</TabsTrigger>
         </TabsList>
         <div className="flex items-center gap-2">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm" className="flex items-center gap-1.5">
                 <IconLayoutColumns className="h-4 w-4" />
-                <span className="hidden lg:inline">Customize Columns</span>
-                <span className="lg:hidden">Columns</span>
+                <span className="hidden lg:inline">Colonnes</span>
                 <IconChevronDown className="h-3.5 w-3.5" />
               </Button>
             </DropdownMenuTrigger>
@@ -348,9 +347,9 @@ export function DataTable({ data: initialData }) {
               ))}
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="outline" size="sm" className="flex items-center gap-1.5">
+          <Button variant="outline" size="sm" className="flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white border-none">
             <IconPlus className="h-4 w-4" />
-            <span className="hidden lg:inline">Deploy Server</span>
+            <span className="hidden lg:inline">Nouveau Serveur</span>
           </Button>
         </div>
       </div>
@@ -373,16 +372,16 @@ export function DataTable({ data: initialData }) {
                       <Checkbox
                         checked={allPageSelected}
                         onCheckedChange={toggleSelectAll}
-                        aria-label="Select all"
+                        aria-label="Tout sélectionner"
                       />
                     </div>
                   </TableHead>
-                  {visibleColumns.header && <TableHead>Domain / Hostname</TableHead>}
-                  {visibleColumns.type && <TableHead>Plan Type</TableHead>}
-                  {visibleColumns.status && <TableHead>Status</TableHead>}
-                  {visibleColumns.target && <TableHead className="text-right">CPU Load</TableHead>}
-                  {visibleColumns.limit && <TableHead className="text-right">Storage Limit</TableHead>}
-                  {visibleColumns.reviewer && <TableHead>Assigned Tech</TableHead>}
+                  {visibleColumns.header && <TableHead>Domaine / Nom du serveur</TableHead>}
+                  {visibleColumns.type && <TableHead>Formule d'Hébergement</TableHead>}
+                  {visibleColumns.status && <TableHead>Statut</TableHead>}
+                  {visibleColumns.target && <TableHead className="text-right">Propriétaire</TableHead>}
+                  {visibleColumns.limit && <TableHead className="text-right">Date d'Expiration</TableHead>}
+                  {visibleColumns.reviewer && <TableHead>Administrateur</TableHead>}
                   <TableHead className="w-8" />
                 </TableRow>
               </TableHeader>
