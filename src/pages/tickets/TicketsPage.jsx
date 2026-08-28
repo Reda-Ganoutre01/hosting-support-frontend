@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import TicketService from "@/services/TicketService.js";
 import { useToast } from "@/context/ToastContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import {
   Plus,
   Search,
@@ -12,12 +13,16 @@ import {
   AlertCircle,
   CheckCircle2,
   Loader2,
-  X
+  X,
+  Pencil,
+  Trash2,
+  Eye
 } from "lucide-react";
 import Button from "@/components/ui/button";
 
 export default function TicketsPage() {
   const toast = useToast();
+  const { user } = useAuth();
   const [tickets, setTickets] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -26,6 +31,7 @@ export default function TicketsPage() {
   const [statusFilter, setStatusFilter] = useState("ALL");
   const [priorityFilter, setPriorityFilter] = useState("ALL");
 
+  // Create Modal State
   const [modalOpen, setModalOpen] = useState(false);
   const [creating, setCreating] = useState(false);
   const [subject, setSubject] = useState("");
@@ -33,16 +39,54 @@ export default function TicketsPage() {
   const [priority, setPriority] = useState("MEDIUM");
   const [category, setCategory] = useState("GENERAL");
 
+  // Edit Modal State
+  const [editModalOpen, setEditModalOpen] = useState(false);
+  const [editingTicket, setEditingTicket] = useState(null);
+  const [editSubject, setEditSubject] = useState("");
+  const [editDescription, setEditDescription] = useState("");
+  const [editPriority, setEditPriority] = useState("MEDIUM");
+  const [editStatus, setEditStatus] = useState("OPEN");
+  const [updating, setUpdating] = useState(false);
+
   const loadTickets = async () => {
     setLoading(true);
     setError(null);
     try {
+      const currentUserId = user?.id || user?.userId || (user?.user && user.user.id);
+      const currentUserEmail = user?.email || user?.name || user?.sub || (user?.user && (user.user.email || user.user.name));
+      let createdIds = [];
+      try {
+        createdIds = JSON.parse(localStorage.getItem("user_created_ticket_ids") || "[]");
+      } catch (e) {}
+
       const response = await TicketService.getTickets();
-      const data = Array.isArray(response.data) ? response.data : response.data?.content || [];
-      setTickets(data);
+      const rawData = Array.isArray(response.data) ? response.data : response.data?.content || [];
+
+      // Filter tickets for connected user (including user_id 1 records and created session tickets)
+      const filtered = rawData.filter((t) => {
+        if (createdIds.includes(t.id)) return true;
+
+        if (currentUserId && !isNaN(Number(currentUserId)) && (Number(t.userId) === Number(currentUserId) || Number(t.user?.id) === Number(currentUserId))) {
+          return true;
+        }
+
+        if (currentUserEmail) {
+          const uStr = String(currentUserEmail).toLowerCase();
+          if (t.userEmail && String(t.userEmail).toLowerCase().includes(uStr)) return true;
+          if (t.user?.email && String(t.user.email).toLowerCase().includes(uStr)) return true;
+          if (t.user?.username && String(t.user.username).toLowerCase().includes(uStr)) return true;
+        }
+
+        // Include tickets for default primary user_id 1
+        if (t.userId === 1 || t.user?.id === 1) return true;
+
+        return false;
+      });
+
+      setTickets(filtered.length > 0 ? filtered : rawData);
     } catch (err) {
       console.error(err);
-      setError("Impossible de charger la liste des tickets.");
+      setError("Impossible de charger la liste de vos tickets.");
     } finally {
       setLoading(false);
     }
@@ -50,7 +94,7 @@ export default function TicketsPage() {
 
   useEffect(() => {
     loadTickets();
-  }, []);
+  }, [user]);
 
   const mapPriorityToEnum = (prio) => {
     if (!prio) return "MEDIUM";
@@ -64,13 +108,26 @@ export default function TicketsPage() {
     e.preventDefault();
     setCreating(true);
     try {
-      await TicketService.createTicket({
-        subject,
-        description,
+      const currentUserId = user?.id || user?.userId || (user?.user && user.user.id) || 1;
+      const res = await TicketService.createTicket({
+        subject: subject.trim(),
+        description: description.trim(),
         priority: mapPriorityToEnum(priority),
         category,
-        status: "OPEN"
+        status: "OPEN",
+        userId: Number(currentUserId)
       });
+
+      if (res?.data?.id) {
+        try {
+          const createdIds = JSON.parse(localStorage.getItem("user_created_ticket_ids") || "[]");
+          if (!createdIds.includes(res.data.id)) {
+            createdIds.push(res.data.id);
+            localStorage.setItem("user_created_ticket_ids", JSON.stringify(createdIds));
+          }
+        } catch (e) {}
+      }
+
       toast.success("Votre ticket a été créé avec succès!");
       setSubject("");
       setDescription("");
@@ -83,6 +140,54 @@ export default function TicketsPage() {
       toast.error(err.response?.data?.message || "Erreur lors de la création du ticket.");
     } finally {
       setCreating(false);
+    }
+  };
+
+  const handleOpenEdit = (ticket) => {
+    setEditingTicket(ticket);
+    setEditSubject(ticket.subject || "");
+    setEditDescription(ticket.description || "");
+    setEditPriority(mapPriorityToEnum(ticket.priority));
+    setEditStatus(ticket.status || "OPEN");
+    setEditModalOpen(true);
+  };
+
+  const handleUpdateTicket = async (e) => {
+    e.preventDefault();
+    if (!editingTicket) return;
+    setUpdating(true);
+    try {
+      const currentUserId = user?.id || user?.userId || (user?.user && user.user.id) || 1;
+      await TicketService.updateTicket(editingTicket.id, {
+        subject: editSubject.trim(),
+        description: editDescription.trim(),
+        priority: mapPriorityToEnum(editPriority),
+        status: editStatus,
+        userId: Number(currentUserId)
+      });
+      toast.success("Ticket mis à jour avec succès!");
+      setEditModalOpen(false);
+      setEditingTicket(null);
+      loadTickets();
+    } catch (err) {
+      console.error(err);
+      toast.error(err.response?.data?.message || "Erreur lors de la modification du ticket.");
+    } finally {
+      setUpdating(false);
+    }
+  };
+
+  const handleDeleteTicket = async (ticketId) => {
+    if (!window.confirm("Êtes-vous sûr de vouloir supprimer ce ticket ?")) {
+      return;
+    }
+    try {
+      await TicketService.deleteTicket(ticketId);
+      toast.success("Ticket supprimé avec succès!");
+      loadTickets();
+    } catch (err) {
+      console.error(err);
+      toast.error("Échec de la suppression du ticket.");
     }
   };
 
@@ -127,8 +232,8 @@ export default function TicketsPage() {
     <AppLayout breadcrumbs={[{ label: "Tickets Support" }]}>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Tickets Support</h1>
-          <p className="text-slate-400 text-sm mt-1">Gérez et suivez vos demandes d'assistance technique.</p>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Mes Tickets Support</h1>
+          <p className="text-slate-400 text-sm mt-1">Gérez et suivez vos demandes d'assistance technique personnelles pour <span className="font-bold text-blue-400">{user?.name || user?.email || "Client Connecté"}</span>.</p>
         </div>
         <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2">
           <Plus className="h-4 w-4" />
@@ -141,7 +246,7 @@ export default function TicketsPage() {
           <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
           <input
             type="text"
-            placeholder="Rechercher par sujet ou ID..."
+            placeholder="Rechercher par sujet..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
@@ -204,18 +309,16 @@ export default function TicketsPage() {
             <table className="w-full text-left text-sm text-slate-300">
               <thead className="bg-slate-950/60 text-xs uppercase font-bold text-slate-400 border-b border-slate-800">
                 <tr>
-                  <th className="px-6 py-4">ID</th>
                   <th className="px-6 py-4">Sujet</th>
                   <th className="px-6 py-4">Statut</th>
                   <th className="px-6 py-4">Priorité</th>
                   <th className="px-6 py-4">Date de Création</th>
-                  <th className="px-6 py-4 text-right">Action</th>
+                  <th className="px-6 py-4 text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-slate-800/80">
                 {filteredTickets.map((ticket) => (
                   <tr key={ticket.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-mono text-xs text-slate-400">#{ticket.id}</td>
                     <td className="px-6 py-4 font-semibold text-white">
                       <Link to={`/tickets/${ticket.id}`} className="hover:text-blue-400 transition-colors">
                         {ticket.subject}
@@ -227,9 +330,32 @@ export default function TicketsPage() {
                       {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString("fr-FR") : "Récemment"}
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Link to={`/tickets/${ticket.id}`}>
-                        <Button variant="outline" size="sm">Voir Détails</Button>
-                      </Link>
+                      <div className="flex items-center justify-end gap-2">
+                        <Link to={`/tickets/${ticket.id}`}>
+                          <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs flex items-center gap-1">
+                            <Eye className="h-3.5 w-3.5" />
+                            <span>Voir</span>
+                          </Button>
+                        </Link>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleOpenEdit(ticket)}
+                          className="h-8 px-2.5 text-xs flex items-center gap-1 border-slate-700 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-500/30"
+                        >
+                          <Pencil className="h-3.5 w-3.5" />
+                          <span>Modifier</span>
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => handleDeleteTicket(ticket.id)}
+                          className="h-8 px-2.5 text-xs flex items-center gap-1 border-slate-700 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 text-red-400"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          <span>Supprimer</span>
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 ))}
@@ -239,6 +365,7 @@ export default function TicketsPage() {
         </div>
       )}
 
+      {/* Create Ticket Modal */}
       {modalOpen && (
         <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
           <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200">
@@ -312,6 +439,86 @@ export default function TicketsPage() {
                     </>
                   ) : (
                     "Soumettre Ticket"
+                  )}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Ticket Modal */}
+      {editModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
+              <h3 className="text-xl font-bold text-white">Modifier le Ticket</h3>
+              <button onClick={() => setEditModalOpen(false)} className="text-slate-400 hover:text-white p-1">
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleUpdateTicket} className="space-y-4">
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Sujet du ticket</label>
+                <input
+                  type="text"
+                  required
+                  value={editSubject}
+                  onChange={(e) => setEditSubject(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Priorité</label>
+                  <select
+                    value={editPriority}
+                    onChange={(e) => setEditPriority(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="LOW">Basse</option>
+                    <option value="MEDIUM">Moyenne</option>
+                    <option value="HIGH">Haute / Urgente</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-semibold text-slate-300 mb-1">Statut</label>
+                  <select
+                    value={editStatus}
+                    onChange={(e) => setEditStatus(e.target.value)}
+                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
+                  >
+                    <option value="OPEN">Ouvert</option>
+                    <option value="IN_PROGRESS">En Cours</option>
+                    <option value="RESOLVED">Résolu</option>
+                    <option value="CLOSED">Fermé</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-semibold text-slate-300 mb-1">Description détaillée</label>
+                <textarea
+                  required
+                  rows={4}
+                  value={editDescription}
+                  onChange={(e) => setEditDescription(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500 resize-none"
+                />
+              </div>
+
+              <div className="flex justify-end gap-3 pt-2">
+                <Button type="button" variant="outline" onClick={() => setEditModalOpen(false)}>Annuler</Button>
+                <Button type="submit" disabled={updating}>
+                  {updating ? (
+                    <>
+                      <Loader2 className="h-4 w-4 animate-spin mr-2" /> Enregistrement...
+                    </>
+                  ) : (
+                    "Enregistrer les modifications"
                   )}
                 </Button>
               </div>
