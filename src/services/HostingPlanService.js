@@ -23,6 +23,10 @@ class HostingPlanService {
     return api.get("/hostingAccounts");
   }
 
+  async getHostingAccountsByUser(userId) {
+    return api.get(`/hostingAccounts/user/${userId}`);
+  }
+
   async createHostingAccount(data) {
     return api.post("/hostingAccounts", data);
   }
