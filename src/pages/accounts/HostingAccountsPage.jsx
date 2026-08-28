@@ -34,13 +34,22 @@ export default function HostingAccountsPage() {
     try {
       let res;
       if (user?.id) {
-        res = await HostingPlanService.getHostingAccountsByUser(user.id);
+        try {
+          res = await HostingPlanService.getHostingAccountsByUser(user.id);
+        } catch {
+          res = await HostingPlanService.getHostingAccounts();
+        }
       } else {
         res = await HostingPlanService.getHostingAccounts();
       }
+
       let list = Array.isArray(res.data) ? res.data : [];
-      if (user?.id) {
-        list = list.filter((a) => a.userId === user.id || a.user?.id === user.id);
+      if (user) {
+        list = list.filter((a) => 
+          (user.id && (a.userId === Number(user.id) || a.user?.id === Number(user.id))) ||
+          (user.email && a.userEmail === user.email) ||
+          (user.name && a.userName === user.name)
+        );
       }
       setAccounts(list);
     } catch (err) {
@@ -85,10 +94,10 @@ export default function HostingAccountsPage() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight">
-            Mes Comptes Hébergement
+            Mes Comptes Hébergement & Commandes
           </h1>
           <p className="text-muted-foreground text-sm mt-1">
-            Gérez vos domaines, renouvellements et statut de vos serveurs.
+            Affichage personnalisé pour <span className="font-bold text-blue-600 dark:text-blue-400">{user?.name || user?.email || "Client Connecté"}</span> (Domaines commandés & Formules souscrites).
           </p>
         </div>
 
