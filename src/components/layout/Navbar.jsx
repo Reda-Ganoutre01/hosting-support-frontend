@@ -9,7 +9,9 @@ import {
   Cpu, 
   Shield, 
   HelpCircle, 
-  FileText 
+  FileText,
+  Package,
+  LifeBuoy
 } from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { Badge } from "@/components/ui/Badge.jsx";
@@ -78,6 +80,51 @@ export default function Navbar({ isScrolled }) {
             
             <NavigationMenu>
               <NavigationMenuList>
+
+                {/* Dropdown Mes Commandes (logged-in users) */}
+                {user && (
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className={isGroupActive(["/client/hosting", "/client/accounts", "/accounts"]) ? "text-amber-300 font-bold" : ""}>
+                      <span className="flex items-center gap-1.5">
+                        <Package className="w-4 h-4 text-amber-400" />
+                        Commandes
+                      </span>
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="w-80">
+                      <div className="space-y-2 p-1">
+                        <Link to="/client/hosting" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                          <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Server className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Mes Formules d'Hébergement</div>
+                            <div className="text-xs text-slate-500 font-normal">Gérer vos abonnements web souscrits</div>
+                          </div>
+                        </Link>
+
+                        <Link to="/domain" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                          <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Globe className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">Mes Noms de Domaine</div>
+                            <div className="text-xs text-slate-500 font-normal">Vos domaines commandés et DNS</div>
+                          </div>
+                        </Link>
+
+                        <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                          <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover/item:bg-purple-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Layout className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-purple-600 transition-colors">Site Web & Services</div>
+                            <div className="text-xs text-slate-500 font-normal">Commander de nouveaux services et offres</div>
+                          </div>
+                        </Link>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                )}
 
                 {/* Serveurs Dropdown */}
                 <NavigationMenuItem>
