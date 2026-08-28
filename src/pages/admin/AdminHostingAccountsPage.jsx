@@ -3,7 +3,7 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import AdminService from "@/services/AdminService.js";
 import { useToast } from "@/context/ToastContext.jsx";
-import { Database, Plus, Search, CheckCircle, XCircle, Clock, Loader2, Globe } from "lucide-react";
+import { Database, Plus, Search, CheckCircle, XCircle, Clock, Loader2, Globe, Pencil } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/label";
@@ -51,6 +51,18 @@ export default function AdminHostingAccountsPage() {
     userId: "",
     hostingPlanId: "",
     status: "ACTIVE",
+  });
+
+  // Edit Dialog State
+  const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
+  const [editingAccountId, setEditingAccountId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    domainName: "",
+    userId: "",
+    hostingPlanId: "",
+    status: "ACTIVE",
+    startDate: "",
+    expirationDate: "",
   });
 
   const [usersMap, setUsersMap] = useState({});
@@ -122,6 +134,19 @@ export default function AdminHostingAccountsPage() {
     }
   };
 
+  const handleOpenEdit = (acc) => {
+    setEditingAccountId(acc.id);
+    setEditFormData({
+      domainName: acc.domainName || "",
+      userId: acc.userId ? String(acc.userId) : (users.length > 0 ? String(users[0].id) : ""),
+      hostingPlanId: acc.hostingPlanId ? String(acc.hostingPlanId) : (plans.length > 0 ? String(plans[0].id) : ""),
+      status: acc.status || "ACTIVE",
+      startDate: acc.startDate || new Date().toISOString().split("T")[0],
+      expirationDate: acc.expirationDate || new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+    });
+    setIsEditDialogOpen(true);
+  };
+
   const handleCreateSubmit = async (e) => {
     e.preventDefault();
     if (!formData.domainName.trim() || !formData.userId || !formData.hostingPlanId) {
@@ -147,6 +172,36 @@ export default function AdminHostingAccountsPage() {
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de la création du compte.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleEditSubmit = async (e) => {
+    e.preventDefault();
+    if (!editFormData.domainName.trim() || !editFormData.userId || !editFormData.hostingPlanId) {
+      toast.error("Veuillez remplir les informations requises.");
+      return;
+    }
+
+    setSubmitting(true);
+    try {
+      const payload = {
+        domainName: editFormData.domainName.trim(),
+        userId: Number(editFormData.userId),
+        hostingPlanId: Number(editFormData.hostingPlanId),
+        status: editFormData.status,
+        startDate: editFormData.startDate,
+        expirationDate: editFormData.expirationDate,
+      };
+
+      await HostingPlanService.updateHostingAccount(editingAccountId, payload);
+      toast.success("Compte d'hébergement mis à jour avec succès !");
+      setIsEditDialogOpen(false);
+      loadAccounts();
+    } catch (err) {
+      console.error(err);
+      toast.error("Erreur lors de la mise à jour du compte.");
     } finally {
       setSubmitting(false);
     }
@@ -266,6 +321,15 @@ export default function AdminHostingAccountsPage() {
                       <TableCell>{acc.startDate || "2026-01-01"}</TableCell>
                       <TableCell>{acc.expirationDate || "2027-01-01"}</TableCell>
                       <TableCell className="text-right space-x-1">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => handleOpenEdit(acc)}
+                          className="text-xs text-blue-600 hover:text-blue-700 dark:text-blue-400"
+                        >
+                          <Pencil className="h-3.5 w-3.5 mr-1" /> Modifier
+                        </Button>
+
                         {acc.status !== "ACTIVE" && (
                           <Button
                             size="sm"
@@ -378,6 +442,105 @@ export default function AdminHostingAccountsPage() {
                 </Button>
                 <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-700 text-white">
                   {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Créer le compte"}
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
+
+        {/* Dialog for Editing Hosting Account */}
+        <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
+          <DialogContent className="sm:max-w-md bg-card border-border">
+            <DialogHeader>
+              <DialogTitle>Modifier le compte d'hébergement</DialogTitle>
+              <DialogDescription>Mettez à jour les informations du compte d'hébergement.</DialogDescription>
+            </DialogHeader>
+
+            <form onSubmit={handleEditSubmit} className="space-y-4 py-2">
+              <div className="space-y-2">
+                <Label htmlFor="editDomainName">Nom de domaine</Label>
+                <Input
+                  id="editDomainName"
+                  placeholder="Ex: monsiteclient.ma"
+                  value={editFormData.domainName}
+                  onChange={(e) => setEditFormData({ ...editFormData, domainName: e.target.value })}
+                  required
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label>Client (Utilisateur)</Label>
+                <Select value={editFormData.userId} onValueChange={(val) => setEditFormData({ ...editFormData, userId: val })}>
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue placeholder="Sélectionner un client" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {users.map((u) => (
+                      <SelectItem key={u.id} value={String(u.id)}>
+                        {u.name || u.email} (#{u.id})
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Formule d'hébergement</Label>
+                <Select value={editFormData.hostingPlanId} onValueChange={(val) => setEditFormData({ ...editFormData, hostingPlanId: val })}>
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue placeholder="Sélectionner une formule" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {plans.map((p) => (
+                      <SelectItem key={p.id} value={String(p.id)}>
+                        {p.name} ({p.price} DH/an)
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="space-y-2">
+                <Label>Statut</Label>
+                <Select value={editFormData.status} onValueChange={(val) => setEditFormData({ ...editFormData, status: val })}>
+                  <SelectTrigger className="bg-background border-border">
+                    <SelectValue placeholder="Sélectionner un statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="ACTIVE">Actif</SelectItem>
+                    <SelectItem value="SUSPENDED">Suspendu</SelectItem>
+                    <SelectItem value="EXPIRED">Expiré</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="editStartDate">Date début</Label>
+                  <Input
+                    id="editStartDate"
+                    type="date"
+                    value={editFormData.startDate}
+                    onChange={(e) => setEditFormData({ ...editFormData, startDate: e.target.value })}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="editExpirationDate">Expiration</Label>
+                  <Input
+                    id="editExpirationDate"
+                    type="date"
+                    value={editFormData.expirationDate}
+                    onChange={(e) => setEditFormData({ ...editFormData, expirationDate: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <DialogFooter className="pt-4">
+                <Button type="button" variant="outline" onClick={() => setIsEditDialogOpen(false)}>
+                  Annuler
+                </Button>
+                <Button type="submit" disabled={submitting} className="bg-blue-600 hover:bg-blue-700 text-white">
+                  {submitting ? <Loader2 className="h-4 w-4 animate-spin" /> : "Enregistrer les modifications"}
                 </Button>
               </DialogFooter>
             </form>
