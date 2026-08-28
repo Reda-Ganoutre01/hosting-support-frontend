@@ -1,5 +1,5 @@
 import * as React from "react";
-import { IconTrendingDown, IconTrendingUp, IconServer, IconHeadset, IconDatabase, IconCurrencyDollar } from "@tabler/icons-react";
+import { IconTrendingUp, IconServer, IconHeadset, IconDatabase, IconCurrencyDollar, IconUsers } from "@tabler/icons-react";
 
 import { Badge } from "@/components/ui/Badge";
 import {
@@ -11,99 +11,110 @@ import {
   CardTitle
 } from "@/components/ui/card";
 
-export function SectionCards() {
+export function SectionCards({ stats = {} }) {
+  const {
+    activeAccountsCount = 0,
+    totalAccountsCount = 0,
+    openTicketsCount = 0,
+    totalTicketsCount = 0,
+    usersCount = 0,
+    revenueEst = 0,
+  } = stats;
+
   return (
     <div className="grid grid-cols-1 gap-4 px-4 lg:px-6 sm:grid-cols-2 lg:grid-cols-4">
-      <Card className="@container/card bg-card border-border">
+      <Card className="@container/card bg-card border-border shadow-sm">
         <CardHeader>
           <CardDescription className="flex items-center gap-1.5 font-medium">
             <IconCurrencyDollar className="h-4 w-4 text-blue-500" />
-            Monthly Hosting Revenue
+            Revenu Estimé Hébergements
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums sm:text-3xl text-foreground">
-            $24,850.00
+            {revenueEst.toLocaleString("fr-FR")} DH/an
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex items-center gap-1 border-blue-500/30 text-blue-400">
               <IconTrendingUp className="h-3.5 w-3.5" />
-              +14.2%
+              Direct
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex items-center gap-2 font-medium text-foreground">
-            +18 new VPS subscriptions <IconTrendingUp className="size-4 text-emerald-400" />
+            Basé sur les formules actives <IconTrendingUp className="size-4 text-emerald-400" />
           </div>
-          <div className="text-muted-foreground text-xs">Compared to last month</div>
+          <div className="text-muted-foreground text-xs">Données réelles de la plateforme</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card bg-card border-border">
+
+      <Card className="@container/card bg-card border-border shadow-sm">
         <CardHeader>
           <CardDescription className="flex items-center gap-1.5 font-medium">
             <IconDatabase className="h-4 w-4 text-emerald-500" />
-            Active Accounts
+            Comptes d'Hébergement
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums sm:text-3xl text-foreground">
-            1,420
+            {activeAccountsCount} Actifs
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex items-center gap-1 border-emerald-500/30 text-emerald-400">
               <IconTrendingUp className="h-3.5 w-3.5" />
-              +8.5%
+              {totalAccountsCount} Total
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex items-center gap-2 font-medium text-foreground">
-            cPanel & Cloud Servers <IconTrendingUp className="size-4 text-emerald-400" />
+            Serveurs Vala Cloud & cPanel <IconTrendingUp className="size-4 text-emerald-400" />
           </div>
-          <div className="text-muted-foreground text-xs">98.4% retention rate</div>
+          <div className="text-muted-foreground text-xs">Gestion des domaines & VPS</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card bg-card border-border">
+
+      <Card className="@container/card bg-card border-border shadow-sm">
         <CardHeader>
           <CardDescription className="flex items-center gap-1.5 font-medium">
             <IconHeadset className="h-4 w-4 text-amber-500" />
-            Support Tickets
+            Tickets de Support
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums sm:text-3xl text-foreground">
-            18 Pending
+            {openTicketsCount} En cours
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex items-center gap-1 border-amber-500/30 text-amber-400">
-              <IconTrendingDown className="h-3.5 w-3.5" />
-              -4 Urgent
+              {totalTicketsCount} Total
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex items-center gap-2 font-medium text-foreground">
-            Avg. response time 14m <IconHeadset className="size-4 text-amber-400" />
+            Assistance Vala AI & Équipe <IconHeadset className="size-4 text-amber-400" />
           </div>
-          <div className="text-muted-foreground text-xs">4 High priority requiring review</div>
+          <div className="text-muted-foreground text-xs">Temps de réponse optimal</div>
         </CardFooter>
       </Card>
-      <Card className="@container/card bg-card border-border">
+
+      <Card className="@container/card bg-card border-border shadow-sm">
         <CardHeader>
           <CardDescription className="flex items-center gap-1.5 font-medium">
-            <IconServer className="h-4 w-4 text-purple-500" />
-            Server Network Health
+            <IconUsers className="h-4 w-4 text-purple-500" />
+            Utilisateurs Inscrits
           </CardDescription>
           <CardTitle className="text-2xl font-semibold tabular-nums sm:text-3xl text-foreground">
-            99.98%
+            {usersCount} Clients
           </CardTitle>
           <CardAction>
             <Badge variant="outline" className="flex items-center gap-1 border-purple-500/30 text-purple-400">
               <IconTrendingUp className="h-3.5 w-3.5" />
-              Optimal
+              Vérifiés
             </Badge>
           </CardAction>
         </CardHeader>
         <CardFooter className="flex-col items-start gap-1.5 text-sm">
           <div className="line-clamp-1 flex items-center gap-2 font-medium text-foreground">
-            12 Nodes operational <IconServer className="size-4 text-purple-400" />
+            {usersCount} comptes utilisateurs <IconServer className="size-4 text-purple-400" />
           </div>
-          <div className="text-muted-foreground text-xs">Zero downtime recorded this week</div>
+          <div className="text-muted-foreground text-xs">Accès Espace Client & Admin</div>
         </CardFooter>
       </Card>
     </div>
