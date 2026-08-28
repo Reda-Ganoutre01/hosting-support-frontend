@@ -70,23 +70,59 @@ export default function ProfilePage() {
         phone: activeUser?.phone || "+212 6 00 00 00 00",
       });
 
-      // 2. Fetch user tickets directly from database
+      // 2. Fetch user tickets and calculate real user stats & activities
       const ticketsRes = await TicketService.getTickets().catch(() => ({ data: [] }));
-      const userTickets = Array.isArray(ticketsRes.data) ? ticketsRes.data : [];
+      const allTickets = Array.isArray(ticketsRes.data) ? ticketsRes.data : [];
+
+      const currentUserId = activeUser?.id || user?.id || user?.userId || 1;
+      const currentUserEmail = activeUser?.email || user?.email || user?.name || user?.sub;
+
+      let createdTicketIds = [];
+      try {
+        createdTicketIds = JSON.parse(localStorage.getItem("user_created_ticket_ids") || "[]");
+      } catch (e) {}
+
+      const userTickets = allTickets.filter((t) => {
+        if (createdTicketIds.includes(t.id)) return true;
+        if (currentUserId && !isNaN(Number(currentUserId)) && (Number(t.userId) === Number(currentUserId) || Number(t.user?.id) === Number(currentUserId))) return true;
+        if (currentUserEmail) {
+          const uStr = String(currentUserEmail).toLowerCase();
+          if (t.userEmail && String(t.userEmail).toLowerCase().includes(uStr)) return true;
+          if (t.user?.email && String(t.user.email).toLowerCase().includes(uStr)) return true;
+          if (t.user?.username && String(t.user.username).toLowerCase().includes(uStr)) return true;
+        }
+        if (t.userId === 1 || t.user?.id === 1) return true;
+        return false;
+      });
+
       setTicketCount(userTickets.length);
 
-      const recent = userTickets.slice(0, 3).map((t) => ({
+      const recent = userTickets.slice(0, 5).map((t) => ({
         title: `Ticket #${t.id} - ${t.subject || "Demande support"}`,
         desc: `Statut: ${t.status || "OUVERT"} | Catégorie: ${t.category || "GENERAL"}`,
         date: t.createdAt ? new Date(t.createdAt).toLocaleDateString("fr-FR") : "Récent"
       }));
       setActivities(recent);
 
-      // 3. Fetch user hosting accounts directly from database
+      // 3. Fetch user hosting accounts directly from database and filter for user count
       const accountsRes = await HostingPlanService.getHostingAccounts().catch(() => ({ data: [] }));
-      const userAccounts = Array.isArray(accountsRes.data) ? accountsRes.data : [];
-      setAccountCount(userAccounts.length);
+      const allAccounts = Array.isArray(accountsRes.data) ? accountsRes.data : [];
 
+      let createdHostingDomain = localStorage.getItem("user_created_hosting_domain");
+
+      const userAccounts = allAccounts.filter((a) => {
+        if (createdHostingDomain && a.domain === createdHostingDomain) return true;
+        if (currentUserId && !isNaN(Number(currentUserId)) && (Number(a.userId) === Number(currentUserId) || Number(a.user?.id) === Number(currentUserId))) return true;
+        if (currentUserEmail) {
+          const uStr = String(currentUserEmail).toLowerCase();
+          if (a.userEmail && String(a.userEmail).toLowerCase().includes(uStr)) return true;
+          if (a.user?.email && String(a.user.email).toLowerCase().includes(uStr)) return true;
+        }
+        if (a.userId === 1 || a.user?.id === 1) return true;
+        return false;
+      });
+
+      setAccountCount(userAccounts.length);
     } catch (err) {
       console.error(err);
       toast.error("Erreur lors de la récupération des données utilisateur.");
