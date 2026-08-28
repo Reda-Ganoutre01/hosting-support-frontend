@@ -145,8 +145,7 @@ export default function AdminTicketsPage() {
               <SelectItem value="ALL">Toutes les priorités</SelectItem>
               <SelectItem value="LOW">Faible</SelectItem>
               <SelectItem value="MEDIUM">Moyenne</SelectItem>
-              <SelectItem value="HIGH">Élevée</SelectItem>
-              <SelectItem value="URGENT">Urgente</SelectItem>
+              <SelectItem value="HIGH">Haute / Urgente</SelectItem>
             </SelectContent>
           </Select>
         </div>
