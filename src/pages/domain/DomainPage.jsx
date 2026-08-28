@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar.jsx";
 import { Footer } from "@/components/layout/Footer.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
+import HostingPlanService from "@/services/HostingPlanService.js";
 import {
   Search,
   ShieldCheck,
@@ -18,6 +20,7 @@ import {
   Star,
   Server,
   Check,
+  Loader2,
 } from "lucide-react";
 import Button from "@/components/ui/Button.jsx";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card.jsx";
@@ -25,11 +28,15 @@ import Input from "@/components/ui/Input.jsx";
 
 export default function DomainPage() {
   const toast = useToast();
+  const navigate = useNavigate();
+  const { user } = useAuth();
+
   const [searchDomain, setSearchDomain] = useState("");
   const [selectedTld, setSelectedTld] = useState(".ma");
   const [isSearching, setIsSearching] = useState(false);
   const [searchResult, setSearchResult] = useState(null);
   const [openFaqId, setOpenFaqId] = useState(1);
+  const [reserving, setReserving] = useState(false);
 
   const popularTlds = [
     { tld: ".ma", price: "125 DH", oldPrice: "150 DH", popular: true, description: "Extension officielle du Maroc pour un positionnement local." },
@@ -58,7 +65,6 @@ export default function DomainPage() {
     { id: 4, question: "Le certificat SSL et le masque WHOIS sont-ils inclus ?", answer: "Oui. Votre domaine inclut en standard un certificat SSL Let's Encrypt et la protection WHOIS pour plus de confidentialité." },
   ];
 
-  // Handle auto search from URL parameter (e.g. /domain?q=myname)
   React.useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const query = params.get("q");
@@ -91,12 +97,43 @@ export default function DomainPage() {
       } else {
         toast.error(`Le domaine ${fullDomain} est déjà réservé.`);
       }
-    }, 700);
+    }, 600);
   };
 
   const handleSearch = (e) => {
     e.preventDefault();
     triggerDomainSearch(searchDomain, selectedTld);
+  };
+
+  const handleReserveDomain = async (domainToReserve) => {
+    if (!user) {
+      toast.info("Veuillez vous connecter pour réserver ce nom de domaine.");
+      navigate("/login");
+      return;
+    }
+
+    const domainName = domainToReserve || searchResult?.domain || "mon-nouveau-domaine.ma";
+    setReserving(true);
+
+    try {
+      const payload = {
+        domainName: domainName.trim(),
+        userId: Number(user.id),
+        hostingPlanId: 1,
+        status: "ACTIVE",
+        startDate: new Date().toISOString().split("T")[0],
+        expirationDate: new Date(Date.now() + 365 * 24 * 60 * 60 * 1000).toISOString().split("T")[0],
+      };
+
+      await HostingPlanService.createHostingAccount(payload);
+      toast.success(`Le domaine ${domainName} a été réservé avec succès !`);
+      navigate("/client/accounts");
+    } catch (err) {
+      console.error("Erreur lors de la réservation du domaine:", err);
+      toast.error("Impossible de réserver le domaine pour le moment.");
+    } finally {
+      setReserving(false);
+    }
   };
 
   return (
@@ -168,11 +205,15 @@ export default function DomainPage() {
                       </span>
                     </div>
                     {searchResult.available && (
-                      <Link to="/login">
-                        <Button size="sm" className="bg-emerald-600 text-white hover:bg-emerald-700">
-                          Réserver {searchResult.price}
-                        </Button>
-                      </Link>
+                      <Button
+                        size="sm"
+                        disabled={reserving}
+                        onClick={() => handleReserveDomain(searchResult.domain)}
+                        className="bg-emerald-600 text-white hover:bg-emerald-700 flex items-center gap-2"
+                      >
+                        {reserving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                        <span>Réserver {searchResult.price}</span>
+                      </Button>
                     )}
                   </div>
                 )}
@@ -219,11 +260,14 @@ export default function DomainPage() {
                     ))}
                   </ul>
 
-                  <Link to="/login">
-                    <Button className="w-full bg-slate-900 text-white hover:bg-slate-800">
-                      Commander maintenant
-                    </Button>
-                  </Link>
+                  <Button
+                    onClick={() => handleReserveDomain(searchDomain ? `${searchDomain}${selectedTld}` : "valahost.ma")}
+                    disabled={reserving}
+                    className="w-full bg-slate-900 text-white hover:bg-slate-800 flex items-center justify-center gap-2"
+                  >
+                    {reserving ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    <span>Commander maintenant</span>
+                  </Button>
                 </CardContent>
               </Card>
             </div>
@@ -257,14 +301,20 @@ export default function DomainPage() {
                   </div>
 
                   <div className="flex gap-2">
-                    <Link to="/login" className="flex-1">
-                      <Button className="w-full bg-blue-600 text-white hover:bg-blue-700">Réserver</Button>
-                    </Link>
-                    <Link to="/login" className="flex-1">
-                      <Button variant="outline" className="w-full border-slate-200 bg-white hover:bg-slate-50">
-                        Transférer
-                      </Button>
-                    </Link>
+                    <Button
+                      onClick={() => handleReserveDomain(`mon-site${item.tld}`)}
+                      disabled={reserving}
+                      className="flex-1 bg-blue-600 text-white hover:bg-blue-700"
+                    >
+                      Réserver
+                    </Button>
+                    <Button
+                      variant="outline"
+                      onClick={() => handleReserveDomain(`mon-site${item.tld}`)}
+                      className="flex-1 border-slate-200 bg-white hover:bg-slate-50"
+                    >
+                      Transférer
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
@@ -328,11 +378,14 @@ export default function DomainPage() {
                       <td className="px-5 py-4">{row.renew}</td>
                       <td className="px-5 py-4">{row.transfer}</td>
                       <td className="px-5 py-4 text-right">
-                        <Link to="/login">
-                          <Button size="sm" className="bg-blue-600 text-white hover:bg-blue-700">
-                            Commander
-                          </Button>
-                        </Link>
+                        <Button
+                          size="sm"
+                          onClick={() => handleReserveDomain(`mon-site${row.tld}`)}
+                          disabled={reserving}
+                          className="bg-blue-600 text-white hover:bg-blue-700"
+                        >
+                          Commander
+                        </Button>
                       </td>
                     </tr>
                   ))}
@@ -380,12 +433,14 @@ export default function DomainPage() {
                 <h3 className="text-2xl font-bold text-slate-900">Profitez d’une réduction sur les domaines .MA et .COM</h3>
               </div>
 
-              <Link to="/login">
-                <Button className="bg-blue-600 text-white hover:bg-blue-700">
-                  En profiter maintenant
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              <Button
+                onClick={() => handleReserveDomain("promo-domaine.ma")}
+                disabled={reserving}
+                className="bg-blue-600 text-white hover:bg-blue-700"
+              >
+                En profiter maintenant
+                <ArrowRight className="ml-2 h-4 w-4" />
+              </Button>
             </div>
           </div>
         </section>
