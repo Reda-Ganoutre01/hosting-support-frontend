@@ -43,6 +43,14 @@ export default function CreateTicketPage() {
     fetchAccounts();
   }, []);
 
+  const mapPriorityToEnum = (prio) => {
+    if (!prio) return "MEDIUM";
+    const u = prio.toUpperCase();
+    if (u === "URGENT" || u === "URGENTE" || u === "ELEVEE" || u === "HIGH") return "HIGH";
+    if (u === "FAIBLE" || u === "LOW") return "LOW";
+    return "MEDIUM";
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -62,7 +70,7 @@ export default function CreateTicketPage() {
       const payload = {
         subject: subject.trim(),
         description: description.trim(),
-        priority,
+        priority: mapPriorityToEnum(priority),
         hostingAccountId: hostingAccountId ? Number(hostingAccountId) : null,
       };
 
@@ -127,10 +135,9 @@ export default function CreateTicketPage() {
                       <SelectValue placeholder="Sélectionnez la priorité" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="FAIBLE">Basse / Faible</SelectItem>
-                      <SelectItem value="MOYENNE">Normale / Moyenne</SelectItem>
-                      <SelectItem value="ELEVEE">Haute / Élevée</SelectItem>
-                      <SelectItem value="URGENTE">Urgente</SelectItem>
+                      <SelectItem value="LOW">Basse / Faible</SelectItem>
+                      <SelectItem value="MEDIUM">Normale / Moyenne</SelectItem>
+                      <SelectItem value="HIGH">Haute / Urgente</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
