@@ -64,18 +64,21 @@ export default function TicketDetailPage() {
 
     setSending(true);
     try {
-      const senderRole = user?.role === "ADMIN" ? "ADMIN" : "USER";
+      const senderRole = user?.role === "ADMIN" || user?.role === "ROLE_ADMIN" ? "ADMIN" : "USER";
+      const rawUserId = Number(user?.id);
+      const validUserId = (!isNaN(rawUserId) && rawUserId > 0) ? rawUserId : null;
+
       await MessageService.sendMessage({
         ticketId: Number(id),
-        content: newMessage,
+        content: newMessage.trim(),
         sender: senderRole,
-        userId: user?.id || ticket?.user?.id || 1
+        ...(validUserId ? { userId: validUserId } : {})
       });
       setNewMessage("");
       loadTicketAndMessages();
       toast.success("Message envoyé avec succès");
     } catch (err) {
-      console.error(err);
+      console.error("Erreur lors de l'envoi du message:", err);
       toast.error("Échec de l'envoi du message");
     } finally {
       setSending(false);
