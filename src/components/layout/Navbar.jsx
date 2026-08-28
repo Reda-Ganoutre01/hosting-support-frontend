@@ -1,5 +1,5 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { 
   User, 
   Server, 
@@ -28,7 +28,17 @@ import {
 export default function Navbar({ isScrolled }) {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
   const path = location.pathname;
+
+  const handleProtectedClick = (e, targetPath) => {
+    e.preventDefault();
+    if (!user) {
+      navigate("/login");
+    } else {
+      navigate(targetPath);
+    }
+  };
 
   // Helper function for active link styling with white underline indicator
   const getNavLinkClass = (targetPath) => {
@@ -73,7 +83,6 @@ export default function Navbar({ isScrolled }) {
           <nav className="hidden lg:flex items-center gap-2 font-medium text-white/90 text-sm">
             <Link to="/" className={getNavLinkClass("/")}>Accueil</Link>
             <Link to="/domain" className={getNavLinkClass("/domain")}>Domaines</Link>
-            <Link to="/plans" className={getNavLinkClass("/plans")}>Hébergement Web</Link>
             {user && (
               <Link to="/tickets" className={getNavLinkClass("/tickets")}>Tickets</Link>
             )}
@@ -81,57 +90,71 @@ export default function Navbar({ isScrolled }) {
             <NavigationMenu>
               <NavigationMenuList>
 
-                {/* Dropdown Mes Commandes (logged-in users) */}
-                {user && (
-                  <NavigationMenuItem>
-                    <NavigationMenuTrigger className={isGroupActive(["/client/hosting", "/client/accounts", "/accounts"]) ? "text-amber-300 font-bold" : ""}>
-                      <span className="flex items-center gap-1.5">
-                        <Package className="w-4 h-4 text-amber-400" />
-                        Commandes
-                      </span>
-                    </NavigationMenuTrigger>
-                    <NavigationMenuContent className="w-80">
-                      <div className="space-y-2 p-1">
-                        <Link to="/client/hosting" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                          <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
-                            <Server className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Mes Formules d'Hébergement</div>
-                            <div className="text-xs text-slate-500 font-normal">Gérer vos abonnements web souscrits</div>
-                          </div>
-                        </Link>
+                {/* Dropdown Mes Commandes (visible for all users, login check on click) */}
+                <NavigationMenuItem>
+                  <NavigationMenuTrigger className={isGroupActive(["/client/hosting", "/client/accounts", "/accounts"]) ? "text-amber-300 font-bold" : ""}>
+                    <span className="flex items-center gap-1.5">
+                      <Package className="w-4 h-4 text-amber-400" />
+                      Commandes
+                    </span>
+                  </NavigationMenuTrigger>
+                  <NavigationMenuContent className="w-80">
+                    <div className="space-y-2 p-1">
+                      <a
+                        href="/client/accounts"
+                        onClick={(e) => handleProtectedClick(e, "/client/accounts")}
+                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
+                          <Server className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Mes Formules d'Hébergement</div>
+                          <div className="text-xs text-slate-500 font-normal">Gérer vos abonnements web souscrits</div>
+                        </div>
+                      </a>
 
-                        <Link to="/domain" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                          <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shrink-0">
-                            <Globe className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">Mes Noms de Domaine</div>
-                            <div className="text-xs text-slate-500 font-normal">Vos domaines commandés et DNS</div>
-                          </div>
-                        </Link>
+                      <a
+                        href="/client/accounts"
+                        onClick={(e) => handleProtectedClick(e, "/client/accounts")}
+                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shrink-0">
+                          <Globe className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">Mes Noms de Domaine</div>
+                          <div className="text-xs text-slate-500 font-normal">Vos domaines commandés et DNS</div>
+                        </div>
+                      </a>
 
-                        <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                          <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover/item:bg-purple-600 group-hover/item:text-white transition-colors shrink-0">
-                            <Layout className="w-5 h-5" />
-                          </div>
-                          <div>
-                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-purple-600 transition-colors">Site Web & Services</div>
-                            <div className="text-xs text-slate-500 font-normal">Commander de nouveaux services et offres</div>
-                          </div>
-                        </Link>
-                      </div>
-                    </NavigationMenuContent>
-                  </NavigationMenuItem>
-                )}
+                      <a
+                        href="/plans"
+                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
+                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover/item:bg-purple-600 group-hover/item:text-white transition-colors shrink-0">
+                          <Layout className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-purple-600 transition-colors">Site Web & Services</div>
+                          <div className="text-xs text-slate-500 font-normal">Commander de nouveaux services et offres</div>
+                        </div>
+                      </a>
+                    </div>
+                  </NavigationMenuContent>
+                </NavigationMenuItem>
 
                 {/* Serveurs Dropdown */}
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>Serveurs</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-72">
                     <div className="space-y-1">
-                      <Link to="/plans" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                      <a
+                        href="/plans"
+                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
                         <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
                           <Cpu className="w-5 h-5" />
                         </div>
@@ -139,7 +162,7 @@ export default function Navbar({ isScrolled }) {
                           <div className="font-bold text-slate-900 text-sm">VPS Cloud & n8n</div>
                           <div className="text-xs text-slate-500 font-normal">Ressources dédiées scalables</div>
                         </div>
-                      </Link>
+                      </a>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -149,7 +172,11 @@ export default function Navbar({ isScrolled }) {
                   <NavigationMenuTrigger>Création Web</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-80">
                     <div className="space-y-3">
-                      <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                      <a
+                        href="/plans"
+                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                        className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
                           <ShoppingBag className="w-5 h-5" />
                         </div>
@@ -159,36 +186,17 @@ export default function Navbar({ isScrolled }) {
                         </div>
                       </a>
 
-                      <a href="#" className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
+                      <a
+                        href="/plans"
+                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                        className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                      >
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
                           <Layout className="w-5 h-5" />
                         </div>
                         <div>
                           <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site Mojoud</div>
                           <div className="text-xs text-slate-500 font-normal leading-relaxed">Créez votre site web Sans Codage</div>
-                        </div>
-                      </a>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
-                {/* Services Dropdown */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger>
-                    <span className="relative">
-                      Services
-                      <Badge variant="emerald" className="absolute -top-3.5 -right-6 text-[9px] px-1.5 py-0 uppercase bg-emerald-500 text-white font-bold">new</Badge>
-                    </span>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="w-72">
-                    <div className="space-y-1">
-                      <a href="#" className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item">
-                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
-                          <Shield className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm">Certificats SSL</div>
-                          <div className="text-xs text-slate-500 font-normal">Sécurité pour votre marque</div>
                         </div>
                       </a>
                     </div>
