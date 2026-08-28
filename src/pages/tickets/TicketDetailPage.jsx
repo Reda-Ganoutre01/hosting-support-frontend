@@ -14,7 +14,10 @@ import {
   ArrowLeft,
   Loader2,
   BookmarkPlus,
-  Bot
+  Bot,
+  Pencil,
+  Check,
+  X
 } from "lucide-react";
 import Button from "@/components/ui/button";
 
@@ -29,6 +32,11 @@ export default function TicketDetailPage() {
   const [loading, setLoading] = useState(true);
   const [newMessage, setNewMessage] = useState("");
   const [sending, setSending] = useState(false);
+
+  // Inline Message Edit State
+  const [editingMsgId, setEditingMsgId] = useState(null);
+  const [editMsgContent, setEditMsgContent] = useState("");
+  const [updatingMsg, setUpdatingMsg] = useState(false);
 
   const [aiSuggestion, setAiSuggestion] = useState(null);
   const [loadingAi, setLoadingAi] = useState(false);
@@ -82,6 +90,37 @@ export default function TicketDetailPage() {
       toast.error("Échec de l'envoi du message");
     } finally {
       setSending(false);
+    }
+  };
+
+  const handleStartEditMessage = (msg) => {
+    setEditingMsgId(msg.id);
+    setEditMsgContent(msg.content);
+  };
+
+  const handleCancelEditMessage = () => {
+    setEditingMsgId(null);
+    setEditMsgContent("");
+  };
+
+  const handleSaveEditMessage = async (msgId) => {
+    if (!editMsgContent.trim()) return;
+
+    setUpdatingMsg(true);
+    try {
+      await MessageService.updateMessage(msgId, {
+        content: editMsgContent.trim(),
+        ticketId: Number(id)
+      });
+      toast.success("Message mis à jour avec succès");
+      setEditingMsgId(null);
+      setEditMsgContent("");
+      loadTicketAndMessages();
+    } catch (err) {
+      console.error("Erreur mise à jour message:", err);
+      toast.error("Erreur lors de la modification du message");
+    } finally {
+      setUpdatingMsg(false);
     }
   };
 
@@ -162,6 +201,8 @@ export default function TicketDetailPage() {
             ) : (
               messages.map((msg, index) => {
                 const isSupport = msg.sender === "SUPPORT" || msg.sender === "ADMIN";
+                const isEditing = editingMsgId === msg.id;
+
                 return (
                   <div
                     key={msg.id || index}
@@ -171,12 +212,52 @@ export default function TicketDetailPage() {
                       {isSupport ? <ShieldCheck className="h-4 w-4" /> : <User className="h-4 w-4" />}
                     </div>
 
-                    <div className={`max-w-md rounded-2xl p-4 space-y-1 ${isSupport ? "bg-blue-600 text-white rounded-tr-none" : "bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700/60"}`}>
+                    <div className={`group relative max-w-md rounded-2xl p-4 space-y-2 ${isSupport ? "bg-blue-600 text-white rounded-tr-none" : "bg-slate-800 text-slate-100 rounded-tl-none border border-slate-700/60"}`}>
                       <div className="flex items-center justify-between gap-4 text-xs opacity-75">
                         <span className="font-semibold">{isSupport ? "Équipe Vala Support" : "Vous"}</span>
-                        <span>{msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) : "À l'instant"}</span>
+                        <div className="flex items-center gap-2">
+                          <span>{msg.sentAt ? new Date(msg.sentAt).toLocaleTimeString("fr-FR", { hour: '2-digit', minute: '2-digit' }) : "À l'instant"}</span>
+                          {!isEditing && msg.id && (
+                            <button
+                              onClick={() => handleStartEditMessage(msg)}
+                              title="Modifier le message"
+                              className="opacity-0 group-hover:opacity-100 transition-opacity p-0.5 hover:bg-black/20 rounded"
+                            >
+                              <Pencil className="h-3 w-3" />
+                            </button>
+                          )}
+                        </div>
                       </div>
-                      <p className="text-sm leading-relaxed">{msg.content}</p>
+
+                      {isEditing ? (
+                        <div className="space-y-2 pt-1">
+                          <textarea
+                            rows={2}
+                            value={editMsgContent}
+                            onChange={(e) => setEditMsgContent(e.target.value)}
+                            className="w-full bg-slate-950 border border-slate-700 rounded-lg p-2 text-sm text-slate-100 focus:outline-none focus:border-blue-400 resize-none"
+                          />
+                          <div className="flex items-center justify-end gap-2">
+                            <button
+                              type="button"
+                              onClick={handleCancelEditMessage}
+                              className="p-1 text-slate-400 hover:text-white hover:bg-slate-700 rounded"
+                            >
+                              <X className="h-4 w-4" />
+                            </button>
+                            <button
+                              type="button"
+                              disabled={updatingMsg || !editMsgContent.trim()}
+                              onClick={() => handleSaveEditMessage(msg.id)}
+                              className="p-1 text-emerald-400 hover:text-emerald-300 hover:bg-emerald-900/40 rounded"
+                            >
+                              {updatingMsg ? <Loader2 className="h-4 w-4 animate-spin" /> : <Check className="h-4 w-4" />}
+                            </button>
+                          </div>
+                        </div>
+                      ) : (
+                        <p className="text-sm leading-relaxed whitespace-pre-wrap">{msg.content}</p>
+                      )}
                     </div>
                   </div>
                 );
