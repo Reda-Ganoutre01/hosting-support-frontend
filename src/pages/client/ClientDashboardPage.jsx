@@ -2,8 +2,7 @@ import React, { useState, useEffect, useContext } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import { AuthContext } from "@/context/AuthContext.jsx";
-import HostingPlanService from "@/services/HostingPlanService.js";
-import TicketService from "@/services/TicketService.js";
+import NotificationService from "@/services/NotificationService.js";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge";
@@ -27,22 +26,40 @@ export default function ClientDashboardPage() {
 
   const [accounts, setAccounts] = useState([]);
   const [tickets, setTickets] = useState([]);
+  const [notifications, setNotifications] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       try {
-        const [accRes, tickRes] = await Promise.allSettled([
-          HostingPlanService.getHostingAccounts(),
+        const userId = Number(user?.id);
+        const [accRes, tickRes, notifRes] = await Promise.allSettled([
+          userId && !isNaN(userId)
+            ? HostingPlanService.getHostingAccountsByUser(userId)
+            : HostingPlanService.getHostingAccounts(),
           TicketService.getTickets(),
+          userId && !isNaN(userId)
+            ? NotificationService.getNotificationsByUser(userId)
+            : NotificationService.getNotifications(),
         ]);
 
         if (accRes.status === "fulfilled" && Array.isArray(accRes.value?.data)) {
-          setAccounts(accRes.value.data);
+          let list = accRes.value.data;
+          if (userId && !isNaN(userId)) {
+            list = list.filter((a) => a.userId === userId || a.user?.id === userId);
+          }
+          setAccounts(list);
         }
         if (tickRes.status === "fulfilled" && Array.isArray(tickRes.value?.data)) {
-          setTickets(tickRes.value.data);
+          let list = tickRes.value.data;
+          if (userId && !isNaN(userId)) {
+            list = list.filter((t) => t.userId === userId || t.user?.id === userId);
+          }
+          setTickets(list);
+        }
+        if (notifRes.status === "fulfilled" && Array.isArray(notifRes.value?.data)) {
+          setNotifications(notifRes.value.data);
         }
       } catch (err) {
         console.error("Erreur de chargement du tableau de bord client", err);
@@ -52,7 +69,7 @@ export default function ClientDashboardPage() {
     };
 
     fetchData();
-  }, []);
+  }, [user]);
 
   const activeAccountsCount = accounts.filter((a) => a.status === "ACTIVE").length;
   const openTicketsCount = tickets.filter((t) => t.status !== "FERME" && t.status !== "RESOLU").length;
@@ -120,8 +137,10 @@ export default function ClientDashboardPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <div className="text-3xl font-extrabold text-foreground">0</div>
-              <p className="text-xs text-muted-foreground mt-1">Toutes les notifications sont lues</p>
+              <div className="text-3xl font-extrabold text-foreground">{loading ? "-" : notifications.length}</div>
+              <p className="text-xs text-muted-foreground mt-1">
+                {notifications.filter(n => !n.read).length} notification(s) non lue(s)
+              </p>
             </CardContent>
           </Card>
         </div>
