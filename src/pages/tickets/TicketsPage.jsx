@@ -52,6 +52,14 @@ export default function TicketsPage() {
     loadTickets();
   }, []);
 
+  const mapPriorityToEnum = (prio) => {
+    if (!prio) return "MEDIUM";
+    const u = prio.toUpperCase();
+    if (u === "URGENT" || u === "URGENTE" || u === "ELEVEE" || u === "HIGH") return "HIGH";
+    if (u === "FAIBLE" || u === "LOW") return "LOW";
+    return "MEDIUM";
+  };
+
   const handleCreateTicket = async (e) => {
     e.preventDefault();
     setCreating(true);
@@ -59,7 +67,7 @@ export default function TicketsPage() {
       await TicketService.createTicket({
         subject,
         description,
-        priority,
+        priority: mapPriorityToEnum(priority),
         category,
         status: "OPEN"
       });
@@ -264,8 +272,7 @@ export default function TicketsPage() {
                   >
                     <option value="LOW">Basse</option>
                     <option value="MEDIUM">Moyenne</option>
-                    <option value="HIGH">Haute</option>
-                    <option value="URGENT">Urgent</option>
+                    <option value="HIGH">Haute / Urgente</option>
                   </select>
                 </div>
 
