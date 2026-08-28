@@ -27,6 +27,10 @@ class HostingPlanService {
     return api.get(`/hostingAccounts/user/${userId}`);
   }
 
+  async getRevenueAnalytics() {
+    return api.get("/hostingAccounts/analytics");
+  }
+
   async createHostingAccount(data) {
     return api.post("/hostingAccounts", data);
   }
