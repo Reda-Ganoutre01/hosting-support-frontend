@@ -8,6 +8,10 @@ class MessageService {
   async sendMessage(messageData) {
     return api.post("/messages", messageData);
   }
+
+  async updateMessage(id, messageData) {
+    return api.put(`/messages/${id}`, messageData);
+  }
 }
 
 export default new MessageService();
