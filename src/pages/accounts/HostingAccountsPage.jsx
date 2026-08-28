@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { Server, Globe, RefreshCw, XCircle, Loader2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/Badge";
@@ -23,6 +24,7 @@ import {
 
 export default function HostingAccountsPage() {
   const toast = useToast();
+  const { user } = useAuth();
   const [accounts, setAccounts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("ALL");
@@ -30,11 +32,20 @@ export default function HostingAccountsPage() {
   const loadAccounts = async () => {
     setLoading(true);
     try {
-      const res = await HostingPlanService.getHostingAccounts();
-      setAccounts(Array.isArray(res.data) ? res.data : []);
+      let res;
+      if (user?.id) {
+        res = await HostingPlanService.getHostingAccountsByUser(user.id);
+      } else {
+        res = await HostingPlanService.getHostingAccounts();
+      }
+      let list = Array.isArray(res.data) ? res.data : [];
+      if (user?.id) {
+        list = list.filter((a) => a.userId === user.id || a.user?.id === user.id);
+      }
+      setAccounts(list);
     } catch (err) {
       console.error(err);
-      toast.error("Impossible de charger vos comptes d'hébergement.");
+      toast.error("Impossible de charger vos commandes et comptes d'hébergement.");
     } finally {
       setLoading(false);
     }
@@ -42,7 +53,7 @@ export default function HostingAccountsPage() {
 
   useEffect(() => {
     loadAccounts();
-  }, []);
+  }, [user]);
 
   const handleRenew = async (id) => {
     try {
@@ -124,8 +135,8 @@ export default function HostingAccountsPage() {
                         <CardTitle className="text-base text-foreground font-bold">
                           {acc.domainName || "domaine.com"}
                         </CardTitle>
-                        <CardDescription className="text-xs text-muted-foreground">
-                          Plan #{acc.hostingPlanId || 1}
+                        <CardDescription className="text-xs text-muted-foreground font-semibold">
+                          Formule : {acc.hostingPlanName || `Plan #${acc.hostingPlanId || 1}`}
                         </CardDescription>
                       </div>
                     </div>
