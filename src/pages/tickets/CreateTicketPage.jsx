@@ -67,11 +67,13 @@ export default function CreateTicketPage() {
     setSubmitting(true);
 
     try {
+      const currentUserId = user?.id || user?.userId || (user?.user && user.user.id) || 1;
       const payload = {
         subject: subject.trim(),
         description: description.trim(),
         priority: mapPriorityToEnum(priority),
         hostingAccountId: hostingAccountId ? Number(hostingAccountId) : null,
+        userId: Number(currentUserId)
       };
 
       await TicketService.createTicket(payload);
