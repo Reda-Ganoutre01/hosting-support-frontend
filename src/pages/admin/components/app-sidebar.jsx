@@ -49,13 +49,13 @@ export function AppSidebar({ ...props }) {
     { title: "Mes hébergements", url: "/client/accounts", icon: IconDatabase },
     { title: "Mes tickets", url: "/client/tickets", icon: IconHeadset },
     { title: "Assistant IA", url: "/client/ai-assistant", icon: IconRobot },
+    { title: "FAQ", url: "/faq", icon: IconHelp },
     { title: "Notifications", url: "/client/notifications", icon: IconBell }
   ];
 
   const secondaryNav = [
     { title: "Profil", url: isAdmin ? "/admin/profile" : "/client/profile", icon: IconUser },
     { title: "Paramètres", url: isAdmin ? "/admin/settings" : "/client/settings", icon: IconSettings },
-    { title: "Aide & FAQ", url: isAdmin ? "/admin/faq" : "/faq", icon: IconHelp }
   ];
 
   return (
