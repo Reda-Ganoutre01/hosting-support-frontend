@@ -5,6 +5,10 @@ class TicketService {
     return api.get("/tickets");
   }
 
+  async getTicketsByUser(userId) {
+    return api.get(`/tickets/user/${userId}`);
+  }
+
   async getTicketById(id) {
     return api.get(`/tickets/${id}`);
   }
@@ -15,6 +19,10 @@ class TicketService {
 
   async updateTicket(id, ticketData) {
     return api.put(`/tickets/${id}`, ticketData);
+  }
+
+  async deleteTicket(id) {
+    return api.delete(`/tickets/${id}`);
   }
 }
 
