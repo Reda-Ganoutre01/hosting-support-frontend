@@ -37,11 +37,13 @@ export default function ClientDashboardPage() {
         const [accRes, tickRes, notifRes] = await Promise.allSettled([
           userId && !isNaN(userId)
             ? HostingPlanService.getHostingAccountsByUser(userId)
-            : HostingPlanService.getHostingAccounts(),
-          TicketService.getTickets(),
+            : Promise.resolve({ data: [] }),
+          userId && !isNaN(userId)
+            ? TicketService.getTicketsByUser(userId)
+            : Promise.resolve({ data: [] }),
           userId && !isNaN(userId)
             ? NotificationService.getNotificationsByUser(userId)
-            : NotificationService.getNotifications(),
+            : Promise.resolve({ data: [] }),
         ]);
 
         if (accRes.status === "fulfilled" && Array.isArray(accRes.value?.data)) {
@@ -49,26 +51,33 @@ export default function ClientDashboardPage() {
           if (user && list.length > 0) {
             const uId = Number(user.id);
             const uEmail = (user.email || "").toLowerCase();
-            const filtered = list.filter((a) => {
-              const accUserId = a.userId || a.user?.id;
+            list = list.filter((a) => {
+              const accUserId = Number(a.userId ?? a.user?.id ?? 0);
               const accUserEmail = (a.userEmail || a.user?.email || "").toLowerCase();
-              return (uId && accUserId === uId) || (uEmail && accUserEmail === uEmail);
+              return (uId > 0 && accUserId === uId) || (uEmail && accUserEmail === uEmail);
             });
-            if (filtered.length > 0) {
-              list = filtered;
-            }
           }
           setAccounts(list);
+        } else {
+          setAccounts([]);
         }
         if (tickRes.status === "fulfilled" && Array.isArray(tickRes.value?.data)) {
           let list = tickRes.value.data;
           if (userId && !isNaN(userId)) {
-            list = list.filter((t) => t.userId === userId || t.user?.id === userId);
+            list = list.filter((t) => Number(t.userId ?? t.user?.id ?? 0) === userId);
           }
           setTickets(list);
+        } else {
+          setTickets([]);
         }
         if (notifRes.status === "fulfilled" && Array.isArray(notifRes.value?.data)) {
-          setNotifications(notifRes.value.data);
+          const list = notifRes.value.data.filter((n) => {
+            const ownerId = Number(n.userId ?? n.user?.id ?? 0);
+            return !userId || Number.isNaN(userId) ? true : ownerId === userId;
+          });
+          setNotifications(list);
+        } else {
+          setNotifications([]);
         }
       } catch (err) {
         console.error("Erreur de chargement du tableau de bord client", err);
