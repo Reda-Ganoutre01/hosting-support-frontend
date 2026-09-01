@@ -16,7 +16,11 @@ import TicketsPage from "../pages/tickets/TicketsPage.jsx";
 import TicketDetailPage from "../pages/tickets/TicketDetailPage.jsx";
 import CreateTicketPage from "../pages/tickets/CreateTicketPage.jsx";
 import PlansPage from "../pages/plans/PlansPage.jsx";
+import EcommercePage from "../pages/plans/EcommercePage.jsx";
+import SiteMojoudPage from "../pages/plans/SiteMojoudPage.jsx";
 import HostingAccountsPage from "../pages/accounts/HostingAccountsPage.jsx";
+import ClientDomainsPage from "../pages/accounts/ClientDomainsPage.jsx";
+import ClientWebsiteOrdersPage from "../pages/accounts/ClientWebsiteOrdersPage.jsx";
 import NotificationsPage from "../pages/notifications/NotificationsPage.jsx";
 import FaqPage from "../pages/faq/FaqPage.jsx";
 import DomainPage from "../pages/domain/DomainPage.jsx";
@@ -25,6 +29,7 @@ import ContactPage from "../pages/contact/ContactPage.jsx";
 import UsersManagementPage from "../pages/admin/UsersManagementPage.jsx";
 import AdminHostingPlansPage from "../pages/admin/AdminHostingPlansPage.jsx";
 import AdminHostingAccountsPage from "../pages/admin/AdminHostingAccountsPage.jsx";
+import AdminWebsiteOrdersPage from "../pages/admin/AdminWebsiteOrdersPage.jsx";
 import AdminTicketsPage from "../pages/admin/AdminTicketsPage.jsx";
 import AdminFaqPage from "../pages/admin/AdminFaqPage.jsx";
 import AdminProfilePage from "../pages/admin/AdminProfilePage.jsx";
@@ -59,7 +64,7 @@ export function AppRouter() {
         <Suspense fallback={<LoadingPage />}>
           <Router>
             <Routes>
-              {/* Public Routes */}
+              {/* Public & Client Accessible Routes */}
               <Route path="/" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
               <Route path="/home" element={<AdminBlockRoute><HomePage /></AdminBlockRoute>} />
               <Route path="/login" element={<LoginPage />} />
@@ -68,6 +73,12 @@ export function AppRouter() {
               <Route path="/domaine" element={<AdminBlockRoute><DomainPage /></AdminBlockRoute>} />
               <Route path="/domain" element={<AdminBlockRoute><DomainPage /></AdminBlockRoute>} />
               <Route path="/contact" element={<AdminBlockRoute><ContactPage /></AdminBlockRoute>} />
+              <Route path="/plans" element={<AdminBlockRoute><PlansPage /></AdminBlockRoute>} />
+              <Route path="/creation-ecommerce" element={<AdminBlockRoute><EcommercePage /></AdminBlockRoute>} />
+              <Route path="/ecommerce" element={<AdminBlockRoute><EcommercePage /></AdminBlockRoute>} />
+              <Route path="/site-mojoud" element={<AdminBlockRoute><SiteMojoudPage /></AdminBlockRoute>} />
+              <Route path="/site-moujoud" element={<AdminBlockRoute><SiteMojoudPage /></AdminBlockRoute>} />
+              <Route path="/faq" element={<AdminBlockRoute><FaqPage /></AdminBlockRoute>} />
 
               {/* Dynamic Dashboard Redirect */}
               <Route path="/dashboard" element={<ProtectedRoute><DashboardPage /></ProtectedRoute>} />
@@ -76,6 +87,9 @@ export function AppRouter() {
               <Route path="/client/dashboard" element={<ProtectedRoute><ClientDashboardPage /></ProtectedRoute>} />
               <Route path="/client/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/client/hosting" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/client/domains" element={<ProtectedRoute><ClientDomainsPage /></ProtectedRoute>} />
+              <Route path="/client/website-orders" element={<ProtectedRoute><ClientWebsiteOrdersPage /></ProtectedRoute>} />
+              <Route path="/client/services" element={<ProtectedRoute><ClientWebsiteOrdersPage /></ProtectedRoute>} />
               <Route path="/client/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/client/tickets/new" element={<ProtectedRoute><CreateTicketPage /></ProtectedRoute>} />
               <Route path="/client/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
@@ -89,6 +103,7 @@ export function AppRouter() {
               <Route path="/admin/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
               <Route path="/admin/hosting-plans" element={<ProtectedRoute requireAdmin><AdminHostingPlansPage /></ProtectedRoute>} />
               <Route path="/admin/hosting-accounts" element={<ProtectedRoute requireAdmin><AdminHostingAccountsPage /></ProtectedRoute>} />
+              <Route path="/admin/website-orders" element={<ProtectedRoute requireAdmin><AdminWebsiteOrdersPage /></ProtectedRoute>} />
               <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><AdminTicketsPage /></ProtectedRoute>} />
               <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><AdminFaqPage /></ProtectedRoute>} />
               <Route path="/admin/workflow-logs" element={<ProtectedRoute requireAdmin><WorkflowLogsPage /></ProtectedRoute>} />
@@ -100,12 +115,10 @@ export function AppRouter() {
               <Route path="/profile" element={<ProtectedRoute><ProfileRedirect /></ProtectedRoute>} />
               <Route path="/tickets" element={<ProtectedRoute><TicketsPage /></ProtectedRoute>} />
               <Route path="/tickets/:id" element={<ProtectedRoute><TicketDetailPage /></ProtectedRoute>} />
-              <Route path="/plans" element={<ProtectedRoute><PlansPage /></ProtectedRoute>} />
               <Route path="/accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/hosting-accounts" element={<ProtectedRoute><HostingAccountsPage /></ProtectedRoute>} />
               <Route path="/users" element={<ProtectedRoute requireAdmin><UsersManagementPage /></ProtectedRoute>} />
               <Route path="/notifications" element={<ProtectedRoute><NotificationsPage /></ProtectedRoute>} />
-              <Route path="/faq" element={<ProtectedRoute><FaqPage /></ProtectedRoute>} />
 
               {/* 404 Fallback */}
               <Route path="*" element={<NotFoundPage />} />
