@@ -19,33 +19,33 @@ export default function ClientDomainsPage() {
   const loadDomains = async () => {
     setLoading(true);
     try {
-      let res;
+      let list = [];
       if (user?.id) {
         try {
-          res = await HostingPlanService.getHostingAccountsByUser(user.id);
-        } catch {
-          res = await HostingPlanService.getHostingAccounts();
+          const res = await HostingPlanService.getHostingAccountsByUser(user.id);
+          list = Array.isArray(res.data) ? res.data : [];
+        } catch (err) {
+          console.warn("User domain lookup failed, using empty list.", err);
+          list = [];
         }
-      } else {
-        res = await HostingPlanService.getHostingAccounts();
       }
 
-      let list = Array.isArray(res.data) ? res.data : [];
+      const uId = Number(user?.id ?? user?.user?.id ?? user?.userId ?? 0);
+      const uEmail = (user?.email || user?.user?.email || "").toLowerCase();
+
       if (user && list.length > 0) {
-        const uId = Number(user.id);
-        const uEmail = (user.email || "").toLowerCase();
-        const filtered = list.filter((a) => {
-          const accUserId = a.userId || a.user?.id;
+        list = list.filter((a) => {
+          const accUserId = Number(a.userId ?? a.user?.id ?? 0);
           const accUserEmail = (a.userEmail || a.user?.email || "").toLowerCase();
-          return (uId && accUserId === uId) || (uEmail && accUserEmail === uEmail);
+          return (uId > 0 && accUserId === uId) || (uEmail && accUserEmail === uEmail);
         });
-        if (filtered.length > 0) list = filtered;
       }
 
-      setDomains(list);
+      setDomains(list.sort((a, b) => Number(b.id ?? 0) - Number(a.id ?? 0)));
     } catch (err) {
       console.error(err);
       toast.error("Impossible de charger la liste de vos noms de domaine.");
+      setDomains([]);
     } finally {
       setLoading(false);
     }
