@@ -46,8 +46,17 @@ export default function ClientDashboardPage() {
 
         if (accRes.status === "fulfilled" && Array.isArray(accRes.value?.data)) {
           let list = accRes.value.data;
-          if (userId && !isNaN(userId)) {
-            list = list.filter((a) => a.userId === userId || a.user?.id === userId);
+          if (user && list.length > 0) {
+            const uId = Number(user.id);
+            const uEmail = (user.email || "").toLowerCase();
+            const filtered = list.filter((a) => {
+              const accUserId = a.userId || a.user?.id;
+              const accUserEmail = (a.userEmail || a.user?.email || "").toLowerCase();
+              return (uId && accUserId === uId) || (uEmail && accUserEmail === uEmail);
+            });
+            if (filtered.length > 0) {
+              list = filtered;
+            }
           }
           setAccounts(list);
         }
