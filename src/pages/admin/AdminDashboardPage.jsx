@@ -3,6 +3,7 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import { ChartAreaInteractive } from "./components/chart-area-interactive";
 import { DataTable } from "./components/data-table";
 import { SectionCards } from "./components/section-cards";
+import api from "@/lib/axios";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import TicketService from "@/services/TicketService.js";
 import AdminService from "@/services/AdminService.js";
@@ -16,6 +17,7 @@ export default function AdminDashboardPage() {
     openTicketsCount: 0,
     totalTicketsCount: 0,
     usersCount: 0,
+    websiteOrdersCount: 0,
     revenueEst: 0,
   });
   const [tableData, setTableData] = useState([]);
@@ -24,15 +26,17 @@ export default function AdminDashboardPage() {
     const loadDashboardData = async () => {
       setLoading(true);
       try {
-        const [accRes, tickRes, usersRes, plansRes] = await Promise.allSettled([
+        const [accRes, tickRes, usersRes, plansRes, siteOrdersRes] = await Promise.allSettled([
           HostingPlanService.getHostingAccounts(),
           TicketService.getTickets(),
           AdminService.getUsers(),
           HostingPlanService.getHostingPlans(),
+          api.get("/websiteOrders")
         ]);
 
         const accounts = accRes.status === "fulfilled" && Array.isArray(accRes.value?.data) ? accRes.value.data : [];
         const tickets = tickRes.status === "fulfilled" && Array.isArray(tickRes.value?.data) ? tickRes.value.data : [];
+        const siteOrders = siteOrdersRes.status === "fulfilled" && Array.isArray(siteOrdersRes.value?.data) ? siteOrdersRes.value.data : [];
         
         let users = [];
         if (usersRes.status === "fulfilled") {
@@ -63,6 +67,7 @@ export default function AdminDashboardPage() {
           openTicketsCount: openTick.length,
           totalTicketsCount: tickets.length,
           usersCount: users.length,
+          websiteOrdersCount: siteOrders.length > 0 ? siteOrders.length : accounts.filter(a => (a.hostingPlanName||"").toLowerCase().includes("site") || (a.hostingPlanName||"").toLowerCase().includes("commerce")).length,
           revenueEst,
         });
 
