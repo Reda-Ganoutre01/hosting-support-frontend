@@ -47,6 +47,12 @@ export default function PlansPage() {
 
   const handleSubscribe = async (e) => {
     e.preventDefault();
+    if (!user) {
+      toast.info("Veuillez vous connecter pour valider votre commande.");
+      navigate("/login");
+      return;
+    }
+
     if (!domainName.trim()) {
       toast.error("Veuillez saisir un nom de domaine valide.");
       return;
@@ -172,7 +178,14 @@ export default function PlansPage() {
 
                 <CardFooter className="pt-4 pb-6">
                   <Button
-                    onClick={() => setSelectedPlan(plan)}
+                    onClick={() => {
+                      if (!user) {
+                        toast.info("Veuillez vous connecter pour souscrire à une formule d'hébergement.");
+                        navigate("/login");
+                      } else {
+                        setSelectedPlan(plan);
+                      }
+                    }}
                     className={`w-full py-2.5 rounded-xl font-bold transition-all ${
                       isPopular
                         ? "bg-blue-600 hover:bg-blue-700 text-white shadow-lg shadow-blue-500/25"
