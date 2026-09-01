@@ -23,7 +23,7 @@ export default function LoginPage() {
   return (
     <div className="relative flex min-h-svh w-full items-center justify-center bg-slate-50 p-6 md:p-10 dark:bg-slate-950">
       <div className="absolute top-6 left-6 md:top-8 md:left-8 z-20">
-        <BackButton />
+        <BackButton to="/" />
       </div>
 
       <div className="w-full max-w-sm">
