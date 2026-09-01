@@ -90,69 +90,13 @@ export default function Navbar({ isScrolled }) {
             <NavigationMenu>
               <NavigationMenuList>
 
-                {/* Dropdown Mes Commandes (visible for all users, login check on click) */}
-                <NavigationMenuItem>
-                  <NavigationMenuTrigger className={isGroupActive(["/client/hosting", "/client/accounts", "/accounts"]) ? "text-amber-300 font-bold" : ""}>
-                    <span className="flex items-center gap-1.5">
-                      <Package className="w-4 h-4 text-amber-400" />
-                      Commandes
-                    </span>
-                  </NavigationMenuTrigger>
-                  <NavigationMenuContent className="w-80">
-                    <div className="space-y-2 p-1">
-                      <a
-                        href="/client/accounts"
-                        onClick={(e) => handleProtectedClick(e, "/client/accounts")}
-                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
-                      >
-                        <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
-                          <Server className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Mes Formules d'Hébergement</div>
-                          <div className="text-xs text-slate-500 font-normal">Gérer vos abonnements web souscrits</div>
-                        </div>
-                      </a>
-
-                      <a
-                        href="/client/accounts"
-                        onClick={(e) => handleProtectedClick(e, "/client/accounts")}
-                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
-                      >
-                        <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shrink-0">
-                          <Globe className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">Mes Noms de Domaine</div>
-                          <div className="text-xs text-slate-500 font-normal">Vos domaines commandés et DNS</div>
-                        </div>
-                      </a>
-
-                      <a
-                        href="/plans"
-                        onClick={(e) => handleProtectedClick(e, "/plans")}
-                        className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
-                      >
-                        <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover/item:bg-purple-600 group-hover/item:text-white transition-colors shrink-0">
-                          <Layout className="w-5 h-5" />
-                        </div>
-                        <div>
-                          <div className="font-bold text-slate-900 text-sm group-hover/item:text-purple-600 transition-colors">Site Web & Services</div>
-                          <div className="text-xs text-slate-500 font-normal">Commander de nouveaux services et offres</div>
-                        </div>
-                      </a>
-                    </div>
-                  </NavigationMenuContent>
-                </NavigationMenuItem>
-
                 {/* Serveurs Dropdown */}
                 <NavigationMenuItem>
                   <NavigationMenuTrigger>Serveurs</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-72">
                     <div className="space-y-1">
-                      <a
-                        href="/plans"
-                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                      <Link
+                        to="/plans"
                         className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
                       >
                         <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors">
@@ -162,7 +106,7 @@ export default function Navbar({ isScrolled }) {
                           <div className="font-bold text-slate-900 text-sm">VPS Cloud & n8n</div>
                           <div className="text-xs text-slate-500 font-normal">Ressources dédiées scalables</div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -172,9 +116,8 @@ export default function Navbar({ isScrolled }) {
                   <NavigationMenuTrigger>Création Web</NavigationMenuTrigger>
                   <NavigationMenuContent className="w-80">
                     <div className="space-y-3">
-                      <a
-                        href="/plans"
-                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                      <Link
+                        to="/creation-ecommerce"
                         className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
                       >
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
@@ -184,11 +127,10 @@ export default function Navbar({ isScrolled }) {
                           <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site E-commerce</div>
                           <div className="text-xs text-slate-500 font-normal leading-relaxed">UX & Taux de conversion au top</div>
                         </div>
-                      </a>
+                      </Link>
 
-                      <a
-                        href="/plans"
-                        onClick={(e) => handleProtectedClick(e, "/plans")}
+                      <Link
+                        to="/site-mojoud"
                         className="flex items-start gap-3.5 p-2 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
                       >
                         <div className="p-2 rounded-xl bg-blue-50 text-blue-600 border border-blue-100 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
@@ -198,7 +140,7 @@ export default function Navbar({ isScrolled }) {
                           <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Site Mojoud</div>
                           <div className="text-xs text-slate-500 font-normal leading-relaxed">Créez votre site web Sans Codage</div>
                         </div>
-                      </a>
+                      </Link>
                     </div>
                   </NavigationMenuContent>
                 </NavigationMenuItem>
@@ -238,8 +180,69 @@ export default function Navbar({ isScrolled }) {
 
           </nav>
 
-          {/* Admin Dashboard / Mon Profil / Espace Client Button */}
-          <div>
+          {/* Right section: Dropdown Commandes + Admin Dashboard / Mon Profil / Espace Client Button */}
+          <div className="flex items-center gap-3">
+            {/* Dropdown Mes Commandes (visible only if user is logged in with token) */}
+            {user && (
+              <NavigationMenu className="hidden lg:flex">
+                <NavigationMenuList>
+                  <NavigationMenuItem>
+                    <NavigationMenuTrigger className={isGroupActive(["/client/hosting", "/client/accounts", "/accounts"]) ? "text-amber-300 font-bold" : ""}>
+                      <span className="flex items-center gap-1.5 font-bold">
+                        <Package className="w-4 h-4 text-amber-400" />
+                        Commandes
+                      </span>
+                    </NavigationMenuTrigger>
+                    <NavigationMenuContent className="w-80">
+                      <div className="space-y-2 p-1">
+                        <a
+                          href="/client/accounts"
+                          onClick={(e) => handleProtectedClick(e, "/client/accounts")}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                        >
+                          <div className="p-2 rounded-lg bg-blue-100 text-blue-600 group-hover/item:bg-blue-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Server className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-blue-600 transition-colors">Mes Formules d'Hébergement</div>
+                            <div className="text-xs text-slate-500 font-normal">Gérer vos abonnements web souscrits</div>
+                          </div>
+                        </a>
+
+                        <a
+                          href="/client/domains"
+                          onClick={(e) => handleProtectedClick(e, "/client/domains")}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                        >
+                          <div className="p-2 rounded-lg bg-emerald-100 text-emerald-600 group-hover/item:bg-emerald-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Globe className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-emerald-600 transition-colors">Mes Noms de Domaine</div>
+                            <div className="text-xs text-slate-500 font-normal">Vos domaines commandés et DNS</div>
+                          </div>
+                        </a>
+
+                        <a
+                          href="/client/website-orders"
+                          onClick={(e) => handleProtectedClick(e, "/client/website-orders")}
+                          className="flex items-start gap-3 p-2.5 rounded-xl hover:bg-blue-50/80 transition-colors group/item cursor-pointer"
+                        >
+                          <div className="p-2 rounded-lg bg-purple-100 text-purple-600 group-hover/item:bg-purple-600 group-hover/item:text-white transition-colors shrink-0">
+                            <Layout className="w-5 h-5" />
+                          </div>
+                          <div>
+                            <div className="font-bold text-slate-900 text-sm group-hover/item:text-purple-600 transition-colors">Site Web & Services</div>
+                            <div className="text-xs text-slate-500 font-normal">Vos sites web et services souscrits</div>
+                          </div>
+                        </a>
+                      </div>
+                    </NavigationMenuContent>
+                  </NavigationMenuItem>
+                </NavigationMenuList>
+              </NavigationMenu>
+            )}
+
             {(() => {
               const isAdmin = user && (user.role === "ADMIN" || user.role === "ROLE_ADMIN");
               const targetRoute = !user ? "/login" : isAdmin ? "/dashboard" : "/profile";
