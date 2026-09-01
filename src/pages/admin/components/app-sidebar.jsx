@@ -38,6 +38,7 @@ export function AppSidebar({ ...props }) {
     { title: "Utilisateurs", url: "/admin/users", icon: IconUsers },
     { title: "Formules d'hébergement", url: "/admin/hosting-plans", icon: IconServer },
     { title: "Comptes d'hébergement", url: "/admin/hosting-accounts", icon: IconDatabase },
+    { title: "Commandes de Sites Web", url: "/admin/website-orders", icon: IconFileText },
     { title: "Tickets de support", url: "/admin/tickets", icon: IconHeadset },
     { title: "FAQ", url: "/admin/faq", icon: IconHelp },
     { title: "Journaux des workflows", url: "/admin/workflow-logs", icon: IconCpu },
@@ -47,6 +48,7 @@ export function AppSidebar({ ...props }) {
   const clientNav = [
     { title: "Tableau de bord", url: "/client/dashboard", icon: IconDashboard },
     { title: "Mes hébergements", url: "/client/accounts", icon: IconDatabase },
+    { title: "Site Web & Services", url: "/client/website-orders", icon: IconFileText },
     { title: "Mes tickets", url: "/client/tickets", icon: IconHeadset },
     { title: "Assistant IA", url: "/client/ai-assistant", icon: IconRobot },
     { title: "FAQ", url: "/faq", icon: IconHelp },
