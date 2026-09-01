@@ -3,10 +3,18 @@ import { useNavigate } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-export function BackButton({ className, label = "Retour", ...props }) {
+export function BackButton({ className, label = "Retour", to, onClick, ...props }) {
   const navigate = useNavigate();
 
-  const handleBack = () => {
+  const handleBack = (e) => {
+    if (onClick) {
+      onClick(e);
+      return;
+    }
+    if (to) {
+      navigate(to);
+      return;
+    }
     if (window.history.length > 1) {
       navigate(-1);
     } else {
