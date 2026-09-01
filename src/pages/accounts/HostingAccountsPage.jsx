@@ -44,12 +44,19 @@ export default function HostingAccountsPage() {
       }
 
       let list = Array.isArray(res.data) ? res.data : [];
-      if (user) {
-        list = list.filter((a) => 
-          (user.id && (a.userId === Number(user.id) || a.user?.id === Number(user.id))) ||
-          (user.email && a.userEmail === user.email) ||
-          (user.name && a.userName === user.name)
-        );
+      if (user && list.length > 0) {
+        const uId = Number(user.id);
+        const uEmail = (user.email || "").toLowerCase();
+
+        const userAccounts = list.filter((a) => {
+          const accUserId = a.userId || a.user?.id;
+          const accUserEmail = (a.userEmail || a.user?.email || "").toLowerCase();
+          return (uId && accUserId === uId) || (uEmail && accUserEmail === uEmail);
+        });
+
+        if (userAccounts.length > 0) {
+          list = userAccounts;
+        }
       }
       setAccounts(list);
     } catch (err) {
