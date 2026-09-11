@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import TicketService from "@/services/TicketService.js";
@@ -7,18 +7,43 @@ import { useAuth } from "@/context/AuthContext.jsx";
 import {
   Plus,
   Search,
-  Filter,
   Ticket,
-  Clock,
   AlertCircle,
-  CheckCircle2,
   Loader2,
   X,
   Pencil,
   Trash2,
-  Eye
+  Eye,
+  LifeBuoy
 } from "lucide-react";
-import Button from "@/components/ui/button";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/Input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Badge } from "@/components/ui/Badge";
+import { Card, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Dialog,
+  DialogContent,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function TicketsPage() {
   const toast = useToast();
@@ -57,7 +82,7 @@ export default function TicketsPage() {
       let createdIds = [];
       try {
         createdIds = JSON.parse(localStorage.getItem("user_created_ticket_ids") || "[]");
-      } catch (e) {}
+      } catch { /* ignore malformed localStorage */ }
 
       const response = await TicketService.getTickets();
       const rawData = Array.isArray(response.data) ? response.data : response.data?.content || [];
@@ -93,6 +118,7 @@ export default function TicketsPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     loadTickets();
   }, [user]);
 
@@ -125,7 +151,7 @@ export default function TicketsPage() {
             createdIds.push(res.data.id);
             localStorage.setItem("user_created_ticket_ids", JSON.stringify(createdIds));
           }
-        } catch (e) {}
+        } catch { /* ignore malformed localStorage */ }
       }
 
       toast.success("Votre ticket a été créé avec succès!");
@@ -204,14 +230,14 @@ export default function TicketsPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "OPEN":
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-blue-500/10 text-blue-400 border border-blue-500/20">Ouvert</span>;
+        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/30 dark:text-blue-400">Ouvert</Badge>;
       case "IN_PROGRESS":
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">En Cours</span>;
+        return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400">En cours</Badge>;
       case "RESOLVED":
       case "CLOSED":
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Résolu</span>;
+        return <Badge className="bg-emerald-500/10 text-emerald-600 border-emerald-500/30 dark:text-emerald-400">Résolu</Badge>;
       default:
-        return <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-slate-500/10 text-slate-400 border border-slate-500/20">{status || "Ouvert"}</span>;
+        return <Badge variant="secondary">{status || "Ouvert"}</Badge>;
     }
   };
 
@@ -219,313 +245,329 @@ export default function TicketsPage() {
     switch (prio) {
       case "HIGH":
       case "URGENT":
-        return <span className="px-2 py-0.5 rounded text-xs font-bold bg-red-500/10 text-red-400">Haute</span>;
+        return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30 dark:text-red-400">Haute</Badge>;
       case "MEDIUM":
-        return <span className="px-2 py-0.5 rounded text-xs font-bold bg-amber-500/10 text-amber-400">Moyenne</span>;
+        return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400">Moyenne</Badge>;
       case "LOW":
       default:
-        return <span className="px-2 py-0.5 rounded text-xs font-bold bg-slate-500/10 text-slate-400">Basse</span>;
+        return <Badge variant="outline" className="bg-slate-500/10 text-slate-600 border-slate-500/30 dark:text-slate-400">Basse</Badge>;
     }
   };
 
   return (
     <AppLayout breadcrumbs={[{ label: "Tickets Support" }]}>
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">Mes Tickets Support</h1>
-          <p className="text-slate-400 text-sm mt-1">Gérez et suivez vos demandes d'assistance technique personnelles pour <span className="font-bold text-blue-400">{user?.name || user?.email || "Client Connecté"}</span>.</p>
-        </div>
-        <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2">
-          <Plus className="h-4 w-4" />
-          <span>Nouveau Ticket</span>
-        </Button>
-      </div>
-
-      <div className="bg-slate-900 border border-slate-800 rounded-2xl p-4 flex flex-col md:flex-row gap-4 items-center justify-between">
-        <div className="relative w-full md:w-80">
-          <Search className="absolute left-3.5 top-2.5 h-4 w-4 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Rechercher par sujet..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-slate-200 placeholder-slate-500 focus:outline-none focus:border-blue-500 transition-colors"
-          />
+      <div className="space-y-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
+              <LifeBuoy className="h-7 w-7 text-blue-600 dark:text-blue-400" /> Mes Tickets Support
+            </h1>
+            <p className="text-muted-foreground text-sm mt-1">
+              Gérez et suivez vos demandes d'assistance technique personnelles pour{" "}
+              <span className="font-bold text-blue-600 dark:text-blue-400">{user?.name || user?.email || "Client Connecté"}</span>.
+            </p>
+          </div>
+          <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2">
+            <Plus className="h-4 w-4" />
+            <span>Nouveau Ticket</span>
+          </Button>
         </div>
 
-        <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-slate-400" />
-            <span className="text-xs font-semibold text-slate-400">Filtres:</span>
+        {/* Filter Bar */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-card p-4 rounded-xl border border-border">
+          <div className="relative">
+            <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
+            <Input
+              placeholder="Rechercher par sujet ou n° de ticket..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 bg-background"
+            />
           </div>
 
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-xs font-medium text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
-          >
-            <option value="ALL">Tous les Statuts</option>
-            <option value="OPEN">Ouvert</option>
-            <option value="IN_PROGRESS">En Cours</option>
-            <option value="RESOLVED">Résolu</option>
-          </select>
+          <Select value={statusFilter} onValueChange={setStatusFilter}>
+            <SelectTrigger className="bg-background border-border">
+              <SelectValue placeholder="Tous les statuts" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Tous les statuts</SelectItem>
+              <SelectItem value="OPEN">Ouvert</SelectItem>
+              <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+              <SelectItem value="RESOLVED">Résolu</SelectItem>
+              <SelectItem value="CLOSED">Fermé</SelectItem>
+            </SelectContent>
+          </Select>
 
-          <select
-            value={priorityFilter}
-            onChange={(e) => setPriorityFilter(e.target.value)}
-            className="bg-slate-950 border border-slate-800 text-xs font-medium text-slate-200 rounded-xl px-3 py-2 focus:outline-none focus:border-blue-500"
-          >
-            <option value="ALL">Toutes les Priorités</option>
-            <option value="LOW">Basse</option>
-            <option value="MEDIUM">Moyenne</option>
-            <option value="HIGH">Haute</option>
-          </select>
+          <Select value={priorityFilter} onValueChange={setPriorityFilter}>
+            <SelectTrigger className="bg-background border-border">
+              <SelectValue placeholder="Toutes les priorités" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="ALL">Toutes les priorités</SelectItem>
+              <SelectItem value="LOW">Basse</SelectItem>
+              <SelectItem value="MEDIUM">Moyenne</SelectItem>
+              <SelectItem value="HIGH">Haute</SelectItem>
+            </SelectContent>
+          </Select>
         </div>
-      </div>
 
-      {loading ? (
-        <div className="py-20 flex flex-col items-center justify-center text-slate-400 gap-3">
-          <Loader2 className="h-8 w-8 animate-spin text-blue-500" />
-          <p className="text-sm">Chargement de vos tickets...</p>
-        </div>
-      ) : error ? (
-        <div className="p-6 bg-red-950/30 border border-red-900/50 rounded-2xl text-center text-red-400 space-y-3">
-          <AlertCircle className="h-8 w-8 mx-auto" />
-          <p>{error}</p>
-          <Button variant="outline" size="sm" onClick={loadTickets}>Réessayer</Button>
-        </div>
-      ) : filteredTickets.length === 0 ? (
-        <div className="py-16 text-center bg-slate-900/50 border border-slate-800 rounded-2xl p-8 space-y-4">
-          <Ticket className="h-12 w-12 text-slate-600 mx-auto" />
-          <div className="space-y-1">
-            <h3 className="font-bold text-lg text-slate-200">Aucun ticket trouvé</h3>
-            <p className="text-sm text-slate-400">Créez votre premier ticket ou modifiez vos critères de recherche.</p>
-          </div>
-          <Button onClick={() => setModalOpen(true)}>Créer un ticket</Button>
-        </div>
-      ) : (
-        <div className="bg-slate-900 border border-slate-800 rounded-2xl overflow-hidden shadow-xl">
-          <div className="overflow-x-auto">
-            <table className="w-full text-left text-sm text-slate-300">
-              <thead className="bg-slate-950/60 text-xs uppercase font-bold text-slate-400 border-b border-slate-800">
-                <tr>
-                  <th className="px-6 py-4">Sujet</th>
-                  <th className="px-6 py-4">Statut</th>
-                  <th className="px-6 py-4">Priorité</th>
-                  <th className="px-6 py-4">Date de Création</th>
-                  <th className="px-6 py-4 text-right">Actions</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-800/80">
-                {filteredTickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-slate-800/40 transition-colors">
-                    <td className="px-6 py-4 font-semibold text-white">
-                      <Link to={`/tickets/${ticket.id}`} className="hover:text-blue-400 transition-colors">
-                        {ticket.subject}
-                      </Link>
-                    </td>
-                    <td className="px-6 py-4">{getStatusBadge(ticket.status)}</td>
-                    <td className="px-6 py-4">{getPriorityBadge(ticket.priority)}</td>
-                    <td className="px-6 py-4 text-xs text-slate-400">
-                      {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString("fr-FR") : "Récemment"}
-                    </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex items-center justify-end gap-2">
-                        <Link to={`/tickets/${ticket.id}`}>
-                          <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs flex items-center gap-1">
-                            <Eye className="h-3.5 w-3.5" />
-                            <span>Voir</span>
-                          </Button>
+        {/* Tickets Table */}
+        <Card className="bg-card border-border shadow-sm">
+          <CardContent className="p-0">
+            {loading ? (
+              <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-3">
+                <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+                <p className="text-sm font-medium">Chargement de vos tickets...</p>
+              </div>
+            ) : error ? (
+              <div className="py-16 text-center text-muted-foreground space-y-3">
+                <AlertCircle className="h-12 w-12 mx-auto text-red-500/70" />
+                <p className="text-sm font-medium text-foreground">{error}</p>
+                <Button variant="outline" size="sm" onClick={loadTickets}>Réessayer</Button>
+              </div>
+            ) : filteredTickets.length === 0 ? (
+              <div className="py-16 text-center text-muted-foreground space-y-4">
+                <div className="h-16 w-16 mx-auto rounded-2xl bg-muted flex items-center justify-center">
+                  <Ticket className="h-8 w-8 text-muted-foreground/60" />
+                </div>
+                <div className="space-y-1">
+                  <h3 className="font-bold text-lg text-foreground">Aucun ticket trouvé</h3>
+                  <p className="text-sm text-muted-foreground">Créez votre premier ticket ou modifiez vos critères de recherche.</p>
+                </div>
+                <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2 mx-auto">
+                  <Plus className="h-4 w-4" /> Créer un ticket
+                </Button>
+              </div>
+            ) : (
+              <Table>
+                <TableHeader>
+                  <TableRow>
+                    <TableHead>Sujet</TableHead>
+                    <TableHead>Statut</TableHead>
+                    <TableHead>Priorité</TableHead>
+                    <TableHead>Date de création</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
+                </TableHeader>
+                <TableBody>
+                  {filteredTickets.map((ticket) => (
+                    <TableRow key={ticket.id}>
+                      <TableCell className="font-semibold text-foreground">
+                        <Link to={`/tickets/${ticket.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                          {ticket.subject || `Ticket #${ticket.id}`}
                         </Link>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleOpenEdit(ticket)}
-                          className="h-8 px-2.5 text-xs flex items-center gap-1 border-slate-700 hover:bg-amber-500/10 hover:text-amber-400 hover:border-amber-500/30"
-                        >
-                          <Pencil className="h-3.5 w-3.5" />
-                          <span>Modifier</span>
-                        </Button>
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => handleDeleteTicket(ticket.id)}
-                          className="h-8 px-2.5 text-xs flex items-center gap-1 border-slate-700 hover:bg-red-500/10 hover:text-red-400 hover:border-red-500/30 text-red-400"
-                        >
-                          <Trash2 className="h-3.5 w-3.5" />
-                          <span>Supprimer</span>
-                        </Button>
-                      </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </div>
-      )}
+                      </TableCell>
+                      <TableCell>{getStatusBadge(ticket.status)}</TableCell>
+                      <TableCell>{getPriorityBadge(ticket.priority)}</TableCell>
+                      <TableCell className="text-xs text-muted-foreground">
+                        {ticket.createdAt ? new Date(ticket.createdAt).toLocaleDateString("fr-FR") : "Récemment"}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="flex items-center justify-end gap-2">
+                          <Link to={`/tickets/${ticket.id}`}>
+                            <Button variant="outline" size="sm" className="h-8 px-2.5 text-xs flex items-center gap-1">
+                              <Eye className="h-3.5 w-3.5" />
+                              <span>Voir</span>
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleOpenEdit(ticket)}
+                            className="h-8 px-2.5 text-xs flex items-center gap-1 hover:bg-amber-500/10 hover:text-amber-600 hover:border-amber-500/40 dark:hover:text-amber-400"
+                          >
+                            <Pencil className="h-3.5 w-3.5" />
+                            <span>Modifier</span>
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleDeleteTicket(ticket.id)}
+                            className="h-8 px-2.5 text-xs flex items-center gap-1 text-red-600 dark:text-red-400 hover:bg-red-500/10 hover:border-red-500/40"
+                          >
+                            <Trash2 className="h-3.5 w-3.5" />
+                            <span>Supprimer</span>
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            )}
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Create Ticket Modal */}
-      {modalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h3 className="text-xl font-bold text-white">Nouveau Ticket de Support</h3>
-              <button onClick={() => setModalOpen(false)} className="text-slate-400 hover:text-white p-1">
-                <X className="h-5 w-5" />
-              </button>
+      {/* Create Ticket Dialog */}
+      <Dialog open={modalOpen} onOpenChange={setModalOpen}>
+        <DialogContent>
+          <button
+            type="button"
+            onClick={() => setModalOpen(false)}
+            className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <DialogHeader>
+            <DialogTitle>Nouveau Ticket de Support</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleCreateTicket} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="ticket-subject">Sujet du ticket</Label>
+              <Input
+                id="ticket-subject"
+                type="text"
+                required
+                placeholder="Ex: Problème d'accès à mon VPS"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
+              />
             </div>
 
-            <form onSubmit={handleCreateTicket} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Sujet du ticket</label>
-                <input
-                  type="text"
-                  required
-                  placeholder="Ex: Problème d'accès à mon VPS"
-                  value={subject}
-                  onChange={(e) => setSubject(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500"
-                />
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Priorité</Label>
+                <Select value={priority} onValueChange={setPriority}>
+                  <SelectTrigger className="bg-background border-border w-full">
+                    <SelectValue placeholder="Sélectionner la priorité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOW">Basse</SelectItem>
+                    <SelectItem value="MEDIUM">Moyenne</SelectItem>
+                    <SelectItem value="HIGH">Haute / Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Priorité</label>
-                  <select
-                    value={priority}
-                    onChange={(e) => setPriority(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="LOW">Basse</option>
-                    <option value="MEDIUM">Moyenne</option>
-                    <option value="HIGH">Haute / Urgente</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Catégorie</label>
-                  <select
-                    value={category}
-                    onChange={(e) => setCategory(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="GENERAL">Général</option>
-                    <option value="HOSTING">Hébergement Web</option>
-                    <option value="VPS">Serveur VPS</option>
-                    <option value="BILLING">Facturation</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <Label>Catégorie</Label>
+                <Select value={category} onValueChange={setCategory}>
+                  <SelectTrigger className="bg-background border-border w-full">
+                    <SelectValue placeholder="Choisir la catégorie" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="GENERAL">Général</SelectItem>
+                    <SelectItem value="HOSTING">Hébergement Web</SelectItem>
+                    <SelectItem value="VPS">Serveur VPS</SelectItem>
+                    <SelectItem value="BILLING">Facturation</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
-
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Description détaillée</label>
-                <textarea
-                  required
-                  rows={4}
-                  placeholder="Décrivez votre problème avec le plus de détails possible..."
-                  value={description}
-                  onChange={(e) => setDescription(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:border-blue-500 resize-none"
-                />
-              </div>
-
-              <div className="flex justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Annuler</Button>
-                <Button type="submit" disabled={creating}>
-                  {creating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" /> Création...
-                    </>
-                  ) : (
-                    "Soumettre Ticket"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* Edit Ticket Modal */}
-      {editModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 rounded-2xl max-w-lg w-full p-6 shadow-2xl space-y-6 animate-in zoom-in-95 duration-200">
-            <div className="flex items-center justify-between border-b border-slate-800 pb-4">
-              <h3 className="text-xl font-bold text-white">Modifier le Ticket</h3>
-              <button onClick={() => setEditModalOpen(false)} className="text-slate-400 hover:text-white p-1">
-                <X className="h-5 w-5" />
-              </button>
             </div>
 
-            <form onSubmit={handleUpdateTicket} className="space-y-4">
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Sujet du ticket</label>
-                <input
-                  type="text"
-                  required
-                  value={editSubject}
-                  onChange={(e) => setEditSubject(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-2.5 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-                />
+            <div className="space-y-2">
+              <Label htmlFor="ticket-description">Description détaillée</Label>
+              <Textarea
+                id="ticket-description"
+                rows={4}
+                required
+                placeholder="Décrivez votre problème avec le plus de détails possible..."
+                value={description}
+                onChange={(e) => setDescription(e.target.value)}
+              />
+            </div>
+
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setModalOpen(false)}>Annuler</Button>
+              <Button type="submit" disabled={creating}>
+                {creating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Création...
+                  </>
+                ) : (
+                  "Soumettre Ticket"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
+
+      {/* Edit Ticket Dialog */}
+      <Dialog open={editModalOpen} onOpenChange={setEditModalOpen}>
+        <DialogContent>
+          <button
+            type="button"
+            onClick={() => setEditModalOpen(false)}
+            className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+          >
+            <X className="h-4 w-4" />
+          </button>
+          <DialogHeader>
+            <DialogTitle>Modifier le Ticket</DialogTitle>
+          </DialogHeader>
+
+          <form onSubmit={handleUpdateTicket} className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="edit-subject">Sujet du ticket</Label>
+              <Input
+                id="edit-subject"
+                type="text"
+                required
+                value={editSubject}
+                onChange={(e) => setEditSubject(e.target.value)}
+              />
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>Priorité</Label>
+                <Select value={editPriority} onValueChange={setEditPriority}>
+                  <SelectTrigger className="bg-background border-border w-full">
+                    <SelectValue placeholder="Sélectionner la priorité" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="LOW">Basse</SelectItem>
+                    <SelectItem value="MEDIUM">Moyenne</SelectItem>
+                    <SelectItem value="HIGH">Haute / Urgente</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Priorité</label>
-                  <select
-                    value={editPriority}
-                    onChange={(e) => setEditPriority(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="LOW">Basse</option>
-                    <option value="MEDIUM">Moyenne</option>
-                    <option value="HIGH">Haute / Urgente</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">Statut</label>
-                  <select
-                    value={editStatus}
-                    onChange={(e) => setEditStatus(e.target.value)}
-                    className="w-full bg-slate-950 border border-slate-800 rounded-xl px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-blue-500"
-                  >
-                    <option value="OPEN">Ouvert</option>
-                    <option value="IN_PROGRESS">En Cours</option>
-                    <option value="RESOLVED">Résolu</option>
-                    <option value="CLOSED">Fermé</option>
-                  </select>
-                </div>
+              <div className="space-y-2">
+                <Label>Statut</Label>
+                <Select value={editStatus} onValueChange={setEditStatus}>
+                  <SelectTrigger className="bg-background border-border w-full">
+                    <SelectValue placeholder="Sélectionner le statut" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="OPEN">Ouvert</SelectItem>
+                    <SelectItem value="IN_PROGRESS">En cours</SelectItem>
+                    <SelectItem value="RESOLVED">Résolu</SelectItem>
+                    <SelectItem value="CLOSED">Fermé</SelectItem>
+                  </SelectContent>
+                </Select>
               </div>
+            </div>
 
-              <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">Description détaillée</label>
-                <textarea
-                  required
-                  rows={4}
-                  value={editDescription}
-                  onChange={(e) => setEditDescription(e.target.value)}
-                  className="w-full bg-slate-950 border border-slate-800 rounded-xl p-3 text-sm text-slate-100 focus:outline-none focus:border-blue-500 resize-none"
-                />
-              </div>
+            <div className="space-y-2">
+              <Label htmlFor="edit-description">Description détaillée</Label>
+              <Textarea
+                id="edit-description"
+                rows={4}
+                required
+                value={editDescription}
+                onChange={(e) => setEditDescription(e.target.value)}
+              />
+            </div>
 
-              <div className="flex justify-end gap-3 pt-2">
-                <Button type="button" variant="outline" onClick={() => setEditModalOpen(false)}>Annuler</Button>
-                <Button type="submit" disabled={updating}>
-                  {updating ? (
-                    <>
-                      <Loader2 className="h-4 w-4 animate-spin mr-2" /> Enregistrement...
-                    </>
-                  ) : (
-                    "Enregistrer les modifications"
-                  )}
-                </Button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
+            <DialogFooter>
+              <Button type="button" variant="outline" onClick={() => setEditModalOpen(false)}>Annuler</Button>
+              <Button type="submit" disabled={updating}>
+                {updating ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Enregistrement...
+                  </>
+                ) : (
+                  "Enregistrer les modifications"
+                )}
+              </Button>
+            </DialogFooter>
+          </form>
+        </DialogContent>
+      </Dialog>
     </AppLayout>
   );
 }
