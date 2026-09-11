@@ -1,4 +1,4 @@
-import { useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { jwtDecode } from "jwt-decode";
@@ -20,6 +20,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { AuthContext } from "@/context/AuthContext.jsx";
 import { checkIsAdmin } from "@/lib/isAdmin";
+import SettingService from "@/services/SettingService.js";
 
 export function SignupForm({
   className,
@@ -34,10 +35,29 @@ export function SignupForm({
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [localError, setLocalError] = useState("");
+  const [maintenanceMode, setMaintenanceMode] = useState(false);
+
+  useEffect(() => {
+    let cancelled = false;
+    SettingService.getMaintenanceStatus()
+      .then((res) => {
+        if (!cancelled) setMaintenanceMode(Boolean(res.data?.enabled));
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLocalError("");
+
+    if (maintenanceMode) {
+      setLocalError("L'inscription est désactivée pendant la maintenance. Accès réservé aux administrateurs.");
+      return;
+    }
+
     if (clearError) clearError();
 
     if (password !== confirmPassword) {
@@ -70,7 +90,7 @@ export function SignupForm({
         try {
           const decoded = jwtDecode(token);
           isAdmin = checkIsAdmin({ role: decoded.role || decoded.roles });
-        } catch (e) {
+        } catch {
           isAdmin = false;
         }
       }
@@ -95,6 +115,12 @@ export function SignupForm({
           </CardDescription>
         </CardHeader>
         <CardContent>
+          {maintenanceMode && (
+            <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800 dark:border-amber-900/50 dark:bg-amber-950/40 dark:text-amber-300">
+              <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
+              <span>Le site est en maintenance. L'accès est réservé aux administrateurs.</span>
+            </div>
+          )}
           {displayError && (
             <div className="mb-4 flex items-start gap-2.5 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:border-red-900/50 dark:bg-red-950/50 dark:text-red-400">
               <AlertCircle className="h-4 w-4 shrink-0 mt-0.5" />
@@ -183,7 +209,7 @@ export function SignupForm({
                 </FieldDescription>
               </Field>
               <Field>
-                <Button type="submit" className="w-full" disabled={loading}>
+                <Button type="submit" className="w-full" disabled={loading || maintenanceMode}>
                   {loading ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
