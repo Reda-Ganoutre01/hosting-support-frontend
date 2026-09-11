@@ -1,23 +1,26 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import TicketService from "@/services/TicketService.js";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
+import { useAuth } from "@/context/AuthContext.jsx";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { LifeBuoy, ArrowLeft, Loader2, Send } from "lucide-react";
 
 export default function CreateTicketPage() {
   const navigate = useNavigate();
   const toast = useToast();
+  const { user } = useAuth();
 
   const [subject, setSubject] = useState("");
   const [description, setDescription] = useState("");
-  const [priority, setPriority] = useState("MOYENNE");
+  const [priority, setPriority] = useState("MEDIUM");
   const [hostingAccountId, setHostingAccountId] = useState("");
 
   const [hostingAccounts, setHostingAccounts] = useState([]);
@@ -173,10 +176,9 @@ export default function CreateTicketPage() {
 
               <div className="space-y-2">
                 <Label htmlFor="description">Description détaillée</Label>
-                <textarea
+                <Textarea
                   id="description"
                   rows={6}
-                  className="w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50 text-foreground"
                   placeholder="Fournissez le maximum de détails : messages d'erreur, étapes pour reproduire, etc."
                   value={description}
                   onChange={(e) => setDescription(e.target.value)}
