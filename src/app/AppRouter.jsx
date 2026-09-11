@@ -33,6 +33,7 @@ import AdminWebsiteOrdersPage from "../pages/admin/AdminWebsiteOrdersPage.jsx";
 import AdminTicketsPage from "../pages/admin/AdminTicketsPage.jsx";
 import AdminFaqPage from "../pages/admin/AdminFaqPage.jsx";
 import AdminProfilePage from "../pages/admin/AdminProfilePage.jsx";
+import AdminContactsPage from "../pages/admin/AdminContactsPage.jsx";
 
 import AiAssistantPage from "../pages/client/AiAssistantPage.jsx";
 import ClientSettingsPage from "../pages/client/ClientSettingsPage.jsx";
@@ -106,6 +107,7 @@ export function AppRouter() {
               <Route path="/admin/website-orders" element={<ProtectedRoute requireAdmin><AdminWebsiteOrdersPage /></ProtectedRoute>} />
               <Route path="/admin/tickets" element={<ProtectedRoute requireAdmin><AdminTicketsPage /></ProtectedRoute>} />
               <Route path="/admin/faq" element={<ProtectedRoute requireAdmin><AdminFaqPage /></ProtectedRoute>} />
+              <Route path="/admin/contacts" element={<ProtectedRoute requireAdmin><AdminContactsPage /></ProtectedRoute>} />
               <Route path="/admin/workflow-logs" element={<ProtectedRoute requireAdmin><WorkflowLogsPage /></ProtectedRoute>} />
               <Route path="/admin/notifications" element={<ProtectedRoute requireAdmin><NotificationsPage /></ProtectedRoute>} />
               <Route path="/admin/profile" element={<ProtectedRoute requireAdmin><AdminProfilePage /></ProtectedRoute>} />
