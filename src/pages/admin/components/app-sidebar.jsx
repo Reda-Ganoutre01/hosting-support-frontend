@@ -12,7 +12,8 @@ import {
   IconBell,
   IconUser,
   IconRobot,
-  IconFileText
+  IconFileText,
+  IconMail
 } from "@tabler/icons-react";
 
 import {
@@ -40,6 +41,7 @@ export function AppSidebar({ ...props }) {
     { title: "Comptes d'hébergement", url: "/admin/hosting-accounts", icon: IconDatabase },
     { title: "Commandes de Sites Web", url: "/admin/website-orders", icon: IconFileText },
     { title: "Tickets de support", url: "/admin/tickets", icon: IconHeadset },
+    { title: "Messages de contact", url: "/admin/contacts", icon: IconMail },
     { title: "FAQ", url: "/admin/faq", icon: IconHelp },
     { title: "Journaux des workflows", url: "/admin/workflow-logs", icon: IconCpu },
     { title: "Notifications", url: "/admin/notifications", icon: IconBell }
