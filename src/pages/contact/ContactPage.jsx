@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Navbar from "@/components/layout/Navbar.jsx";
 import { Footer } from "@/components/layout/Footer.jsx";
 import Button from "@/components/ui/Button.jsx";
@@ -6,20 +6,25 @@ import Input from "@/components/ui/Input.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
 import { MessageSquare, Rss, PhoneCall, Send, Loader2 } from "lucide-react";
 import { Link } from "react-router-dom";
+import { useAuth } from "@/context/AuthContext.jsx";
+import { ContactService } from "@/services/ContactService.js";
 
 export default function ContactPage() {
   const toast = useToast();
+  const { user, isAuthenticated } = useAuth();
   const [submitting, setSubmitting] = useState(false);
+  const prefillEmail = user?.email || user?.sub || "";
+  const prefillNom = user?.fullName || user?.name || (prefillEmail ? prefillEmail.split("@")[0] : "");
   const [formData, setFormData] = useState({
-    nom: "",
-    email: "",
+    nom: prefillNom,
+    email: prefillEmail,
     objet: "",
     message: "",
     cguAccepted: false,
     cndpAccepted: false,
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.cguAccepted || !formData.cndpAccepted) {
       toast.error("Veuillez accepter les conditions et le traitement de vos données.");
@@ -27,18 +32,28 @@ export default function ContactPage() {
     }
 
     setSubmitting(true);
-    setTimeout(() => {
-      setSubmitting(false);
+    try {
+      await ContactService.createContact({
+        name: formData.nom,
+        email: formData.email,
+        subject: formData.objet,
+        message: formData.message,
+        userId: isAuthenticated ? user?.id ?? user?.sub ?? null : null,
+      });
       toast.success("Votre message a été envoyé avec succès! Notre équipe vous répondra très rapidement.");
       setFormData({
-        nom: "",
-        email: "",
+        nom: isAuthenticated ? formData.nom : "",
+        email: isAuthenticated ? formData.email : "",
         objet: "",
         message: "",
         cguAccepted: false,
         cndpAccepted: false,
       });
-    }, 800);
+    } catch (err) {
+      toast.error(err?.response?.data?.message || "Une erreur est survenue lors de l'envoi de votre message. Veuillez réessayer.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -137,6 +152,7 @@ export default function ContactPage() {
                 <Input
                   type="text"
                   required
+                  readOnly={isAuthenticated}
                   placeholder="Votre nom"
                   value={formData.nom}
                   onChange={(e) => setFormData({ ...formData, nom: e.target.value })}
@@ -149,6 +165,7 @@ export default function ContactPage() {
                 <Input
                   type="email"
                   required
+                  readOnly={isAuthenticated}
                   placeholder="votre@email.com"
                   value={formData.email}
                   onChange={(e) => setFormData({ ...formData, email: e.target.value })}
