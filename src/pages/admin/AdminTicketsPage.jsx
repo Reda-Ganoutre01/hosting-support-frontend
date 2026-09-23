@@ -5,10 +5,10 @@ import TicketService from "@/services/TicketService.js";
 import AdminService from "@/services/AdminService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { LifeBuoy, Search, Filter, MessageSquare, CheckCircle, Clock, XCircle, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import {
   Table,
   TableBody,
