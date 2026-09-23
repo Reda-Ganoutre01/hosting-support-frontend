@@ -4,7 +4,7 @@ import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { Server, Globe, RefreshCw, XCircle, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
   Card,
@@ -13,7 +13,7 @@ import {
   CardFooter,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/ui/Card";
 import {
   Select,
   SelectContent,
