@@ -20,10 +20,10 @@ import {
   X,
   MessageSquare
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/Badge";
-import { Card } from "@/components/ui/card";
+import { Card } from "@/components/ui/Card";
 
 export default function TicketDetailPage() {
   const { id } = useParams();
