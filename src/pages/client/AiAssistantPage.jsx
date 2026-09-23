@@ -4,9 +4,9 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import AiService from "@/services/AiService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Bot, Send, User, Sparkles, HelpCircle, AlertCircle, ArrowRight, Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Badge } from "@/components/ui/Badge";
 
 const SUGGESTED_QUESTIONS = [
