@@ -2,7 +2,11 @@ import axios from "axios";
 import { env } from "../config/env";
 
 const getBaseUrl = () => {
-    const raw = (env.apiBaseUrl || "/api").trim();
+    const raw = (env.apiBaseUrl || "").trim();
+    if (!raw) {
+        throw new Error("Missing VITE_API_BASE_URL. Set it to your backend API URL, for example https://your-backend.onrender.com/api");
+    }
+
     const cleaned = raw.replace(/\/+$/, "");
     if (/\/auth$/i.test(cleaned)) return cleaned;
     return `${cleaned}/auth`;
