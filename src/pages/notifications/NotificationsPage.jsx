@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Ticket, Server, Info } from "lucide-react";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 
 export default function NotificationsPage() {
   const toast = useToast();
