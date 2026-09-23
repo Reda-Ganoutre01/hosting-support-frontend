@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import { AuthContext } from "@/context/AuthContext.jsx";
 import NotificationService from "@/services/NotificationService.js";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
 import {
   Server,
