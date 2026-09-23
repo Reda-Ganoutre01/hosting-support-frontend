@@ -16,12 +16,12 @@ import {
   Eye,
   LifeBuoy
 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import {
   Table,
   TableBody,
@@ -230,7 +230,7 @@ export default function TicketsPage() {
   const getStatusBadge = (status) => {
     switch (status) {
       case "OPEN":
-        return <Badge className="bg-blue-500/10 text-blue-600 border-blue-500/30 dark:text-blue-400">Ouvert</Badge>;
+        return <Badge className="text-blue-600 bg-blue-500/10 border-blue-500/30 dark:text-blue-400">Ouvert</Badge>;
       case "IN_PROGRESS":
         return <Badge className="bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400">En cours</Badge>;
       case "RESOLVED":
@@ -245,7 +245,7 @@ export default function TicketsPage() {
     switch (prio) {
       case "HIGH":
       case "URGENT":
-        return <Badge variant="outline" className="bg-red-500/10 text-red-600 border-red-500/30 dark:text-red-400">Haute</Badge>;
+        return <Badge variant="outline" className="text-red-600 bg-red-500/10 border-red-500/30 dark:text-red-400">Haute</Badge>;
       case "MEDIUM":
         return <Badge variant="outline" className="bg-amber-500/10 text-amber-600 border-amber-500/30 dark:text-amber-400">Moyenne</Badge>;
       case "LOW":
@@ -257,24 +257,24 @@ export default function TicketsPage() {
   return (
     <AppLayout breadcrumbs={[{ label: "Tickets Support" }]}>
       <div className="space-y-6">
-        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-extrabold text-foreground tracking-tight flex items-center gap-2">
-              <LifeBuoy className="h-7 w-7 text-blue-600 dark:text-blue-400" /> Mes Tickets Support
+            <h1 className="flex items-center gap-2 text-2xl font-extrabold tracking-tight sm:text-3xl text-foreground">
+              <LifeBuoy className="text-blue-600 h-7 w-7 dark:text-blue-400" /> Mes Tickets Support
             </h1>
-            <p className="text-muted-foreground text-sm mt-1">
+            <p className="mt-1 text-sm text-muted-foreground">
               Gérez et suivez vos demandes d'assistance technique personnelles pour{" "}
               <span className="font-bold text-blue-600 dark:text-blue-400">{user?.name || user?.email || "Client Connecté"}</span>.
             </p>
           </div>
           <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2">
-            <Plus className="h-4 w-4" />
+            <Plus className="w-4 h-4" />
             <span>Nouveau Ticket</span>
           </Button>
         </div>
 
         {/* Filter Bar */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 bg-card p-4 rounded-xl border border-border">
+        <div className="grid grid-cols-1 gap-4 p-4 border sm:grid-cols-2 lg:grid-cols-3 bg-card rounded-xl border-border">
           <div className="relative">
             <Search className="absolute left-3 top-2.5 h-4 w-4 text-muted-foreground" />
             <Input
@@ -312,30 +312,30 @@ export default function TicketsPage() {
         </div>
 
         {/* Tickets Table */}
-        <Card className="bg-card border-border shadow-sm">
+        <Card className="shadow-sm bg-card border-border">
           <CardContent className="p-0">
             {loading ? (
-              <div className="py-20 flex flex-col items-center justify-center text-muted-foreground gap-3">
-                <Loader2 className="h-8 w-8 animate-spin text-blue-600 dark:text-blue-400" />
+              <div className="flex flex-col items-center justify-center gap-3 py-20 text-muted-foreground">
+                <Loader2 className="w-8 h-8 text-blue-600 animate-spin dark:text-blue-400" />
                 <p className="text-sm font-medium">Chargement de vos tickets...</p>
               </div>
             ) : error ? (
-              <div className="py-16 text-center text-muted-foreground space-y-3">
-                <AlertCircle className="h-12 w-12 mx-auto text-red-500/70" />
+              <div className="py-16 space-y-3 text-center text-muted-foreground">
+                <AlertCircle className="w-12 h-12 mx-auto text-red-500/70" />
                 <p className="text-sm font-medium text-foreground">{error}</p>
                 <Button variant="outline" size="sm" onClick={loadTickets}>Réessayer</Button>
               </div>
             ) : filteredTickets.length === 0 ? (
-              <div className="py-16 text-center text-muted-foreground space-y-4">
-                <div className="h-16 w-16 mx-auto rounded-2xl bg-muted flex items-center justify-center">
-                  <Ticket className="h-8 w-8 text-muted-foreground/60" />
+              <div className="py-16 space-y-4 text-center text-muted-foreground">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto rounded-2xl bg-muted">
+                  <Ticket className="w-8 h-8 text-muted-foreground/60" />
                 </div>
                 <div className="space-y-1">
-                  <h3 className="font-bold text-lg text-foreground">Aucun ticket trouvé</h3>
+                  <h3 className="text-lg font-bold text-foreground">Aucun ticket trouvé</h3>
                   <p className="text-sm text-muted-foreground">Créez votre premier ticket ou modifiez vos critères de recherche.</p>
                 </div>
                 <Button onClick={() => setModalOpen(true)} className="flex items-center gap-2 mx-auto">
-                  <Plus className="h-4 w-4" /> Créer un ticket
+                  <Plus className="w-4 h-4" /> Créer un ticket
                 </Button>
               </div>
             ) : (
@@ -353,7 +353,7 @@ export default function TicketsPage() {
                   {filteredTickets.map((ticket) => (
                     <TableRow key={ticket.id}>
                       <TableCell className="font-semibold text-foreground">
-                        <Link to={`/tickets/${ticket.id}`} className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">
+                        <Link to={`/tickets/${ticket.id}`} className="transition-colors hover:text-blue-600 dark:hover:text-blue-400">
                           {ticket.subject || `Ticket #${ticket.id}`}
                         </Link>
                       </TableCell>
@@ -405,9 +405,9 @@ export default function TicketsPage() {
           <button
             type="button"
             onClick={() => setModalOpen(false)}
-            className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="absolute p-1 transition-colors rounded-md right-4 top-4 text-muted-foreground hover:text-foreground hover:bg-muted"
           >
-            <X className="h-4 w-4" />
+            <X className="w-4 h-4" />
           </button>
           <DialogHeader>
             <DialogTitle>Nouveau Ticket de Support</DialogTitle>
@@ -426,11 +426,11 @@ export default function TicketsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Priorité</Label>
                 <Select value={priority} onValueChange={setPriority}>
-                  <SelectTrigger className="bg-background border-border w-full">
+                  <SelectTrigger className="w-full bg-background border-border">
                     <SelectValue placeholder="Sélectionner la priorité" />
                   </SelectTrigger>
                   <SelectContent>
@@ -444,7 +444,7 @@ export default function TicketsPage() {
               <div className="space-y-2">
                 <Label>Catégorie</Label>
                 <Select value={category} onValueChange={setCategory}>
-                  <SelectTrigger className="bg-background border-border w-full">
+                  <SelectTrigger className="w-full bg-background border-border">
                     <SelectValue placeholder="Choisir la catégorie" />
                   </SelectTrigger>
                   <SelectContent>
@@ -474,7 +474,7 @@ export default function TicketsPage() {
               <Button type="submit" disabled={creating}>
                 {creating ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Création...
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Création...
                   </>
                 ) : (
                   "Soumettre Ticket"
@@ -491,9 +491,9 @@ export default function TicketsPage() {
           <button
             type="button"
             onClick={() => setEditModalOpen(false)}
-            className="absolute right-4 top-4 rounded-md p-1 text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+            className="absolute p-1 transition-colors rounded-md right-4 top-4 text-muted-foreground hover:text-foreground hover:bg-muted"
           >
-            <X className="h-4 w-4" />
+            <X className="w-4 h-4" />
           </button>
           <DialogHeader>
             <DialogTitle>Modifier le Ticket</DialogTitle>
@@ -511,11 +511,11 @@ export default function TicketsPage() {
               />
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
               <div className="space-y-2">
                 <Label>Priorité</Label>
                 <Select value={editPriority} onValueChange={setEditPriority}>
-                  <SelectTrigger className="bg-background border-border w-full">
+                  <SelectTrigger className="w-full bg-background border-border">
                     <SelectValue placeholder="Sélectionner la priorité" />
                   </SelectTrigger>
                   <SelectContent>
@@ -529,7 +529,7 @@ export default function TicketsPage() {
               <div className="space-y-2">
                 <Label>Statut</Label>
                 <Select value={editStatus} onValueChange={setEditStatus}>
-                  <SelectTrigger className="bg-background border-border w-full">
+                  <SelectTrigger className="w-full bg-background border-border">
                     <SelectValue placeholder="Sélectionner le statut" />
                   </SelectTrigger>
                   <SelectContent>
@@ -558,7 +558,7 @@ export default function TicketsPage() {
               <Button type="submit" disabled={updating}>
                 {updating ? (
                   <>
-                    <Loader2 className="h-4 w-4 animate-spin mr-2" /> Enregistrement...
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" /> Enregistrement...
                   </>
                 ) : (
                   "Enregistrer les modifications"
