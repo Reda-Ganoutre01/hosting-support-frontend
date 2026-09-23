@@ -4,10 +4,10 @@ import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { Globe, RefreshCw, ShieldCheck, CheckCircle2, Search, ExternalLink, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription, CardFooter } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 
 export default function ClientDomainsPage() {
   const toast = useToast();
