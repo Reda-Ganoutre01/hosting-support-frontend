@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Search, ChevronDown, ThumbsUp } from "lucide-react";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 
 export default function FaqPage() {
   const toast = useToast();
