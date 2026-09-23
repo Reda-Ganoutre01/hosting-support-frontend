@@ -4,11 +4,11 @@ import HostingPlanService from "@/services/HostingPlanService.js";
 import AdminService from "@/services/AdminService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Database, Plus, Search, CheckCircle, XCircle, Clock, Loader2, Globe, Pencil } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import {
   Table,
   TableBody,
