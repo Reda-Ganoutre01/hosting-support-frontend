@@ -2,9 +2,9 @@ import { useEffect, useState } from "react";
 import AppLayout from "@/components/layout/AppLayout.jsx";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Settings, ShieldAlert, Save } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 // Input and Label removed: AI/n8n settings removed from this page
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
 import { Switch } from "@/components/ui/switch";
 import SettingService from "@/services/SettingService.js";
 
