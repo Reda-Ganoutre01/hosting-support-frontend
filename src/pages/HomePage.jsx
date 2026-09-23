@@ -1,4 +1,7 @@
 import React, { useState, useEffect } from "react";
+import heroThumb from "@/assets/hero/hero-thumb.png";
+import sliderVpsn8n from "@/assets/hero/slider-vpsn8n.png";
+import phoxHeroThumb from "@/assets/hero/phox-hero-thumb.png";
 import Navbar from "@/components/layout/Navbar.jsx";
 import Hero from "@/components/layout/Hero.jsx";
 import FeaturesSection from "@/components/layout/FeaturesSection.jsx";
@@ -20,7 +23,7 @@ export default function HomePage() {
       ],
       tag: "Code promo : PROMO75%",
       buttonText: "Commander",
-      image: "/src/assets/hero/hero-thumb.png",
+      image: heroThumb,
     },
     {
       title: "VPS n8n prêt",
@@ -32,7 +35,7 @@ export default function HomePage() {
       ],
       tag: "Nouveauté",
       buttonText: "Commander",
-      image: "/src/assets/hero/slider-vpsn8n.png",
+      image: sliderVpsn8n,
     },
     {
       title: "Création & Design Web Facile",
@@ -44,7 +47,7 @@ export default function HomePage() {
       ],
       tag: "Pack All-In-One",
       buttonText: "Commander",
-      image: "/src/assets/hero/phox-hero-thumb.png",
+      image: phoxHeroThumb,
     },
     {
       title: "Serveurs Cloud High Performance",
@@ -56,7 +59,7 @@ export default function HomePage() {
       ],
       tag: "Offre Cloud VPS",
       buttonText: "Commander",
-      image: "/src/assets/hero/slider-vpsn8n.png",
+      image: sliderVpsn8n,
     }
   ];
 
