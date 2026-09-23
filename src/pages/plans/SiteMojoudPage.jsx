@@ -4,9 +4,9 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge.jsx";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/card.jsx";
+import { Card, CardHeader, CardTitle, CardDescription, CardContent, CardFooter } from "@/components/ui/Card.jsx";
 import {
   Globe,
   ShieldCheck,
