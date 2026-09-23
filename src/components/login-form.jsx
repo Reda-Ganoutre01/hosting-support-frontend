@@ -112,7 +112,7 @@ export function LoginForm({
                   <FieldLabel htmlFor="password">Mot de passe</FieldLabel>
                   <a
                     href="#"
-                    className="ml-auto inline-block text-sm underline-offset-4 hover:underline"
+                    className="inline-block ml-auto text-sm underline-offset-4 hover:underline"
                   >
                     Mot de passe oublié ?
                   </a>
@@ -130,7 +130,7 @@ export function LoginForm({
                 <Button type="submit" className="w-full" disabled={loading}>
                   {loading ? (
                     <>
-                      <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                       Connexion...
                     </>
                   ) : (
