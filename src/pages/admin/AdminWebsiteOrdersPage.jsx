@@ -3,10 +3,10 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import api from "@/lib/axios";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Layout, Globe, ShoppingBag, CheckCircle2, Clock, Search, RefreshCw, Trash2, Eye, Loader2 } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/Card";
+import { Input } from "@/components/ui/Input";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog";
 
 export default function AdminWebsiteOrdersPage() {
