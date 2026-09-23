@@ -5,7 +5,7 @@ import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { useAuth } from "@/context/AuthContext.jsx";
 import { Check, Loader2, X, Globe, Zap, Server, ShieldCheck, HardDrive, Cpu } from "lucide-react";
-import Button from "@/components/ui/button";
+import Button from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge.jsx";
 import {
   Card,
@@ -14,7 +14,7 @@ import {
   CardDescription,
   CardContent,
   CardFooter
-} from "@/components/ui/card.jsx";
+} from "@/components/ui/Card.jsx";
 
 export default function PlansPage() {
   const navigate = useNavigate();
