@@ -3,9 +3,9 @@ import AppLayout from "@/components/layout/AppLayout.jsx";
 import HostingPlanService from "@/services/HostingPlanService.js";
 import { useToast } from "@/context/ToastContext.jsx";
 import { Cpu, CheckCircle2, XCircle, Clock, Loader2, RefreshCw } from "lucide-react";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/Button";
 import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/card";
+import { Card, CardContent } from "@/components/ui/Card";
 import {
   Table,
   TableBody,
